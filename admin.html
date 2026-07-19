@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>编辑 530Li 模拟数据</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #eef1f4;
+        --card: #fff;
+        --ink: #121820;
+        --muted: #66717d;
+        --line: #dbe1e8;
+        --blue: #1268b3;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 28px 18px 40px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.15;
+      }
+
+      .sub {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      a,
+      button {
+        min-height: 40px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: #111820;
+        font-weight: 750;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .secondary {
+        color: #111820;
+        background: #fff;
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: 14px;
+        background: var(--card);
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+
+      .card.full {
+        grid-column: 1 / -1;
+      }
+
+      .card-title {
+        margin: 0 0 14px;
+        font-size: 16px;
+      }
+
+      label {
+        display: grid;
+        gap: 7px;
+        color: #283340;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        min-height: 42px;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f9fafb;
+        color: var(--ink);
+        outline: none;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(18, 104, 179, 0.12);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 88px;
+      }
+
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+      }
+
+      .wide {
+        grid-column: 1 / -1;
+      }
+
+      .status {
+        margin-top: 16px;
+        min-height: 42px;
+        padding: 11px 13px;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--muted);
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+
+      @media (max-width: 760px) {
+        header {
+          display: grid;
+        }
+
+        .grid,
+        .fields {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div>
+          <h1>编辑 26 款 BMW 530Li 数据</h1>
+          <div class="sub">保存后写入本文件夹的 <code>vehicle-data.json</code>，刷新模拟器即可看到变化。</div>
+        </div>
+        <div class="actions">
+          <a class="secondary" href="index.html">打开模拟器</a>
+          <button id="reload" class="secondary">重新读取</button>
+          <button id="save">保存数据</button>
+        </div>
+      </header>
+
+      <form class="grid" id="form">
+        <section class="card">
+          <h2 class="card-title">车辆信息</h2>
+          <div class="fields">
+            <label>年份<input name="modelYear" /></label>
+            <label>车型<input name="model" /></label>
+            <label class="wide">配置<input name="trim" /></label>
+            <label>车牌<input name="plate" /></label>
+            <label>VIN 后 7 位<input name="vinLast7" /></label>
+            <label>车身颜色<input name="bodyColor" /></label>
+            <label>主题颜色<input name="themeColor" type="color" /></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card-title">车辆页面关键数据</h2>
+          <div class="fields">
+            <label>页面状态标题<input name="headline" /></label>
+            <label>更新时间<input name="lastUpdated" placeholder="今天 22:30" /></label>
+            <label>油量 %<input name="fuelPercent" type="number" min="0" max="100" step="1" /></label>
+            <label>续航公里<input name="rangeKm" type="number" min="0" max="827" step="1" /></label>
+            <label>总里程 km<input name="odometerKm" type="number" min="0" /></label>
+            <label>保养剩余 km<input name="serviceDueKm" type="number" min="0" /></label>
+          </div>
+        </section>
+
+        <section class="card full">
+          <h2 class="card-title">定位与状态</h2>
+          <div class="fields">
+            <label class="wide">定位地址<input name="location" /></label>
+            <label>机油状态<input name="oilStatus" /></label>
+            <label>胎压<input name="tirePressure" /></label>
+            <label>车门状态<input name="doors" /></label>
+            <label>车窗状态<input name="windows" /></label>
+            <label>经销商<input name="dealer" /></label>
+          </div>
+        </section>
+      </form>
+
+      <div class="status" id="status">准备读取数据。</div>
+    </main>
+
+    <script>
+      const FULL_RANGE_KM = 827;
+      const DEBOUNCE_MS = 300;
+
+      const fallback = {
+        vehicle: {
+          modelYear: "2026",
+          model: "530Li Sedan CHN",
+          trim: "2026款 BMW 530Li",
+          plate: "沪A·530M",
+          vinLast7: "26F530L",
+          bodyColor: "摩天灰",
+          themeColor: "#343d48",
+          lastUpdated: "2026/6/30 21:23已从车辆更新",
+          fullRangeKm: FULL_RANGE_KM,
+          location: "城南派出所 · 秀才港路",
+          fuelPercent: 80,
+          rangeKm: 662,
+          odometerKm: 12680,
+          serviceDueKm: 4200,
+          oilStatus: "正常",
+          tirePressure: "2.4 / 2.4 / 2.5 / 2.5 bar",
+          doors: "已打开",
+          windows: "关闭",
+          dealer: "上海宝景 BMW 授权经销商",
+          headline: "全部正常"
+        }
+      };
+
+      const form = document.querySelector("#form");
+      const status = document.querySelector("#status");
+      const fuelField = form.elements.fuelPercent;
+      const rangeField = form.elements.rangeKm;
+      let fuelSyncTimer = 0;
+      let lastFuelSource = "fuelPercent";
+
+      function setStatus(text) {
+        status.textContent = text;
+      }
+
+      function clamp(value, min, max) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return min;
+        return Math.min(max, Math.max(min, number));
+      }
+
+      function calculateFuelState(values, source = "fuelPercent", fullRangeKm = FULL_RANGE_KM) {
+        const rangeBase = Math.max(1, Number(fullRangeKm || FULL_RANGE_KM));
+        if (source === "rangeKm") {
+          const rangeKm = Math.round(clamp(values.rangeKm, 0, rangeBase));
+          const fuelPercent = Math.round((rangeKm / rangeBase) * 100);
+          return { fullRangeKm: rangeBase, fuelPercent, rangeKm };
+        }
+
+        const fuelPercent = Math.round(clamp(values.fuelPercent, 0, 100));
+        const rangeKm = Math.round((fuelPercent / 100) * rangeBase);
+        return { fullRangeKm: rangeBase, fuelPercent, rangeKm };
+      }
+
+      function syncFuelFields(source, silent = false) {
+        lastFuelSource = source;
+        const sourceField = source === "rangeKm" ? rangeField : fuelField;
+        if (String(sourceField.value).trim() === "") return;
+
+        const fuelState = calculateFuelState(
+          { fuelPercent: fuelField.value, rangeKm: rangeField.value },
+          source,
+          FULL_RANGE_KM
+        );
+        fuelField.value = fuelState.fuelPercent;
+        rangeField.value = fuelState.rangeKm;
+
+        if (!silent) {
+          setStatus(`已按 530Li 满油续航 ${FULL_RANGE_KM}km 同步油位、续航和进度条。`);
+        }
+      }
+
+      function debounceFuelSync(source) {
+        lastFuelSource = source;
+        clearTimeout(fuelSyncTimer);
+        fuelSyncTimer = setTimeout(() => syncFuelFields(source), DEBOUNCE_MS);
+      }
+
+      function fill(data) {
+        const vehicle = data.vehicle || fallback.vehicle;
+        for (const [key, value] of Object.entries(vehicle)) {
+          const field = form.elements[key];
+          if (field) field.value = value;
+        }
+        syncFuelFields("fuelPercent", true);
+      }
+
+      function readForm() {
+        syncFuelFields(lastFuelSource, true);
+        const vehicle = {};
+        for (const field of form.elements) {
+          if (!field.name) continue;
+          const numeric = ["fuelPercent", "rangeKm", "odometerKm", "serviceDueKm"].includes(field.name);
+          vehicle[field.name] = numeric ? Number(field.value || 0) : field.value;
+        }
+        vehicle.fullRangeKm = FULL_RANGE_KM;
+        return { vehicle };
+      }
+
+      async function load() {
+        try {
+          const res = await fetch("/api/data", { cache: "no-store" });
+          if (!res.ok) throw new Error("请通过 start.command 启动服务后再保存到文件。");
+          const data = await res.json();
+          fill(data);
+          setStatus("已读取 vehicle-data.json。");
+        } catch (err) {
+          const saved = localStorage.getItem("mybmw-530-data");
+          fill(saved ? JSON.parse(saved) : fallback);
+          setStatus("当前未通过本地服务打开，保存只能写入浏览器本地缓存；双击 start.command 可保存到 JSON 文件。");
+        }
+      }
+
+      async function save() {
+        const data = readForm();
+        localStorage.setItem("mybmw-530-data", JSON.stringify(data));
+        try {
+          const res = await fetch("/api/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+          if (!res.ok) {
+            const error = await res.json().catch(() => ({}));
+            throw new Error(error.error || "保存失败");
+          }
+          setStatus("已保存到 vehicle-data.json。刷新模拟器页面即可看到最新数据。");
+        } catch (err) {
+          setStatus("已保存到浏览器本地缓存，但没有写入 JSON：" + err.message);
+        }
+      }
+
+      document.querySelector("#reload").addEventListener("click", load);
+      document.querySelector("#save").addEventListener("click", save);
+      fuelField.addEventListener("input", () => debounceFuelSync("fuelPercent"));
+      rangeField.addEventListener("input", () => debounceFuelSync("rangeKm"));
+      load();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "My BMW",
+  "short_name": "My BMW",
+  "description": "私人车辆界面模拟器",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#20264a",
+  "theme_color": "#20264a",
+  "icons": [
+    {
+      "src": "./assets/pwa/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

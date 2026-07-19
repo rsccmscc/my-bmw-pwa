@@ -1,0 +1,28 @@
+{
+  "vehicle": {
+    "modelYear": "2026",
+    "model": "530Li Sedan CHN",
+    "trim": "2026款 BMW 530Li",
+    "plate": "沪A·530M",
+    "vinLast7": "26F530L",
+    "bodyColor": "摩天灰",
+    "themeColor": "#343d48",
+    "headline": "全部正常",
+    "lastUpdated": "2026/6/30 21:23已从车辆更新",
+    "fullRangeKm": 827,
+    "fuelPercent": 80,
+    "rangeKm": 662,
+    "vehicleState": "opened",
+    "mapRoad": "秀才港路",
+    "mapCommunity": "千禧花苑",
+    "mapPolice": "城南派出所",
+    "odometerKm": 12680,
+    "serviceDueKm": 4200,
+    "location": "城南派出所 · 秀才港路",
+    "oilStatus": "正常",
+    "tirePressure": "2.4 / 2.4 / 2.5 / 2.5 bar",
+    "doors": "已打开",
+    "windows": "关闭",
+    "dealer": "上海宝景 BMW 授权经销商"
+  }
+}

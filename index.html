@@ -1,0 +1,2403 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#20264a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="My BMW" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./assets/pwa/icon-180.png" />
+    <title>My BMW</title>
+    <script>
+      if (window.__MYBMW_NATIVE_IOS__ || new URLSearchParams(location.search).get("native") === "1") {
+        document.documentElement.classList.add("native-ios");
+      }
+      if (window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches) {
+        document.documentElement.classList.add("pwa-ios");
+      }
+    </script>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          "BMW Type Next", "BMWTypeNext", "Helvetica Neue",
+          "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-touch-callout: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        overflow: hidden;
+        background: #fff;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+      }
+
+      html.native-ios body,
+      html.pwa-ios body {
+        place-items: start center;
+        background: linear-gradient(180deg, #20264a 0 180px, #fff 180px 100%);
+      }
+
+      .viewport {
+        position: relative;
+        width: calc(430px * var(--app-scale-x, 1));
+        height: calc(936px * var(--app-scale-y, 1));
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .screen {
+        position: relative;
+        width: 430px;
+        height: 936px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 24px 70px rgba(10, 16, 24, 0.22);
+        margin-top: var(--native-offset-y, 0px);
+        transform: scale(var(--app-scale-x, 1), var(--app-scale-y, 1));
+        transform-origin: top left;
+      }
+
+      html.native-ios .screen,
+      html.pwa-ios .screen {
+        box-shadow: none;
+      }
+
+      .reference-base {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        pointer-events: none;
+      }
+
+      .background-theme-overlay {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 430px;
+        height: 202px;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .screen[data-vehicle-background="letter-pink"] .background-theme-overlay {
+        display: block;
+        background: linear-gradient(
+          180deg,
+          #343335 0%,
+          #363538 26%,
+          #413f42 48%,
+          #4b464a 58%,
+          #575155 68%,
+          #655e62 78%,
+          #74696f 88%,
+          #83767b 100%
+        );
+        mix-blend-mode: color;
+        opacity: 0.9;
+      }
+
+      .background-theme-lighting {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 430px;
+        height: 138px;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .screen[data-vehicle-background="letter-pink"] .background-theme-lighting {
+        display: block;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06) 0%,
+          rgba(255, 255, 255, 0.06) 38%,
+          rgba(255, 255, 255, 0.11) 70%,
+          rgba(255, 255, 255, 0.14) 85%,
+          rgba(255, 255, 255, 0.18) 100%
+        );
+        mix-blend-mode: screen;
+      }
+
+      .edit-hotspot {
+        position: absolute;
+        z-index: 12;
+        display: block;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: default;
+        touch-action: manipulation;
+        outline: none;
+      }
+
+      .edit-hotspot:focus,
+      .edit-hotspot:focus-visible {
+        outline: none;
+      }
+
+      .edit-hotspot-updated {
+        left: 82px;
+        top: 70px;
+        width: 266px;
+        height: 70px;
+      }
+
+      .edit-hotspot-fuel {
+        left: 220px;
+        top: 430px;
+        width: 190px;
+        height: 112px;
+      }
+
+      .edit-hotspot-map {
+        left: 16px;
+        top: 740px;
+        width: 398px;
+        height: 112px;
+      }
+
+      .edit-hotspot-status-strip {
+        left: 16px;
+        top: 139px;
+        width: 398px;
+        height: 62px;
+      }
+
+      .edit-hotspot-status-card {
+        left: 16px;
+        top: 425px;
+        width: 191px;
+        height: 174px;
+      }
+
+      .vehicle-switch-hotspot {
+        left: 365px;
+        top: 69px;
+        width: 52px;
+        height: 48px;
+        z-index: 18;
+      }
+
+      .vehicle-stage {
+        position: absolute;
+        left: 0;
+        top: 238px;
+        width: 430px;
+        height: 194px;
+        overflow: visible;
+        display: none;
+        background:
+          linear-gradient(180deg, #4c5574 0%, #858ba1 43%, #f5f5f5 88%, #fff 100%);
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .vehicle-stage::before {
+        content: "";
+        position: absolute;
+        left: 174px;
+        top: -18px;
+        width: 156px;
+        height: 25px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(55, 58, 91, .98), rgba(66, 70, 103, .96));
+        filter: blur(5px);
+        pointer-events: none;
+        display: none;
+      }
+
+      .vehicle-stage::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: -1px;
+        width: 100%;
+        height: 22px;
+        background: linear-gradient(180deg, #3f4263 0%, rgba(63, 66, 99, .88) 28%, rgba(63, 66, 99, 0) 100%);
+        pointer-events: none;
+        display: none;
+        z-index: 2;
+      }
+
+      .screen.has-custom-vehicle .vehicle-stage::after {
+        display: block;
+        top: -1px;
+        height: 9px;
+        background: linear-gradient(
+          180deg,
+          #414563 0%,
+          rgba(65, 69, 99, 0.64) 38%,
+          rgba(65, 69, 99, 0) 100%
+        );
+      }
+
+      .screen[data-vehicle-model="530li"][data-vehicle-color="white"] .vehicle-stage::before {
+        display: block;
+      }
+
+      .screen.has-custom-vehicle .vehicle-stage::before {
+        display: block;
+        background: linear-gradient(180deg, #3a3e60 0%, #3f4263 100%);
+        filter: blur(4px);
+      }
+
+      .screen.has-custom-vehicle .vehicle-stage {
+        display: block;
+        background: transparent;
+      }
+
+      .screen.uses-common-stage .vehicle-stage {
+        top: 201px;
+        height: 224px;
+        overflow: hidden;
+        background: url("assets/vehicle-stage-bg.png") center / 100% 100% no-repeat;
+      }
+
+      .screen.uses-common-stage .vehicle-stage::before,
+      .screen.uses-common-stage .vehicle-stage::after {
+        display: none;
+      }
+
+      .screen.uses-common-stage[data-vehicle-background="letter-pink"] .vehicle-stage {
+        background:
+          radial-gradient(ellipse 18% 62% at 31% 14%, rgba(255, 255, 255, 0.09), transparent 72%),
+          radial-gradient(ellipse 15% 58% at 68% 18%, rgba(255, 255, 255, 0.06), transparent 74%),
+          linear-gradient(
+            180deg,
+            #83767b 0%,
+            #918186 8%,
+            #9a898d 17%,
+            #a59295 26%,
+            #b29fa1 35%,
+            #c2b4b4 44%,
+            #d7ccce 54%,
+            #e2dcdc 63%,
+            #e6e3e4 72%,
+            #efedee 81%,
+            #f8f6f7 90%,
+            #faf9f9 96%,
+            #ffffff 100%
+          );
+      }
+
+      .screen.uses-common-stage[data-vehicle-background^="letter-"] .vehicle-stage::before {
+        content: "ALL\A GOOD";
+        display: block;
+        position: absolute;
+        left: 17px;
+        top: 16px;
+        width: 360px;
+        height: 160px;
+        border-radius: 0;
+        background: none;
+        color: rgba(255, 255, 255, 0.98);
+        filter: none;
+        white-space: pre;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 91px;
+        line-height: 0.76;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-align: left;
+        z-index: 0;
+      }
+
+      .vehicle-contact-shadow {
+        display: none;
+        position: absolute;
+        left: 0;
+        bottom: 16px;
+        width: 430px;
+        height: 42px;
+        background:
+          radial-gradient(ellipse 48px 8px at 47% 55%, rgba(16, 18, 22, 0.62) 0%, rgba(16, 18, 22, 0.3) 46%, transparent 76%),
+          radial-gradient(ellipse 42px 7px at 83% 54%, rgba(16, 18, 22, 0.58) 0%, rgba(16, 18, 22, 0.27) 46%, transparent 76%),
+          radial-gradient(ellipse 142px 14px at 65% 58%, rgba(24, 26, 31, 0.31) 0%, rgba(24, 26, 31, 0.15) 48%, transparent 82%),
+          radial-gradient(ellipse 195px 18px at 55% 68%, rgba(31, 33, 38, 0.2) 0%, rgba(31, 33, 38, 0.09) 52%, transparent 84%);
+        filter: blur(4px);
+        z-index: 0;
+      }
+
+      .screen.uses-common-stage[data-vehicle-era="current"][data-vehicle-model="x5"][data-vehicle-color="accent"]
+        .vehicle-contact-shadow {
+        display: block;
+        bottom: 14px;
+        height: 44px;
+        opacity: 0.92;
+        background:
+          radial-gradient(ellipse 39px 7px at 48% 60%, rgba(11, 12, 15, 0.62) 0%, rgba(11, 12, 15, 0.31) 47%, transparent 78%),
+          radial-gradient(ellipse 32px 6px at 86% 30%, rgba(11, 12, 15, 0.58) 0%, rgba(11, 12, 15, 0.27) 47%, transparent 78%),
+          radial-gradient(ellipse 128px 11px at 68% 48%, rgba(19, 21, 25, 0.28) 0%, rgba(19, 21, 25, 0.13) 50%, transparent 84%),
+          radial-gradient(ellipse 178px 15px at 62% 61%, rgba(27, 29, 34, 0.18) 0%, rgba(27, 29, 34, 0.07) 54%, transparent 86%);
+        filter: blur(3px);
+        mix-blend-mode: multiply;
+      }
+
+      .screen.uses-common-stage[data-vehicle-era="current"][data-vehicle-model="x3"][data-vehicle-color="accent"]
+        .vehicle-contact-shadow {
+        display: block;
+        bottom: 14px;
+        height: 44px;
+        opacity: 0.9;
+        background:
+          radial-gradient(ellipse 37px 7px at 49% 62%, rgba(11, 12, 15, 0.61) 0%, rgba(11, 12, 15, 0.3) 47%, transparent 78%),
+          radial-gradient(ellipse 31px 6px at 86% 31%, rgba(11, 12, 15, 0.56) 0%, rgba(11, 12, 15, 0.26) 47%, transparent 78%),
+          radial-gradient(ellipse 126px 11px at 69% 49%, rgba(19, 21, 25, 0.27) 0%, rgba(19, 21, 25, 0.12) 50%, transparent 84%),
+          radial-gradient(ellipse 175px 15px at 63% 62%, rgba(27, 29, 34, 0.18) 0%, rgba(27, 29, 34, 0.07) 54%, transparent 86%);
+        filter: blur(3px);
+        mix-blend-mode: multiply;
+      }
+
+      .screen.uses-common-stage[data-vehicle-era="current"][data-vehicle-model="325li"][data-vehicle-color="accent"]
+        .vehicle-contact-shadow {
+        display: block;
+        bottom: 14px;
+        height: 44px;
+        opacity: 0.86;
+        background:
+          radial-gradient(ellipse 34px 6px at 48% 61%, rgba(12, 13, 16, 0.57) 0%, rgba(12, 13, 16, 0.27) 47%, transparent 78%),
+          radial-gradient(ellipse 28px 5px at 86% 31%, rgba(12, 13, 16, 0.53) 0%, rgba(12, 13, 16, 0.24) 47%, transparent 78%),
+          radial-gradient(ellipse 124px 10px at 68% 48%, rgba(20, 22, 26, 0.25) 0%, rgba(20, 22, 26, 0.11) 50%, transparent 84%),
+          radial-gradient(ellipse 171px 14px at 62% 61%, rgba(28, 30, 35, 0.16) 0%, rgba(28, 30, 35, 0.06) 54%, transparent 86%);
+        filter: blur(3px);
+        mix-blend-mode: multiply;
+      }
+
+      .screen.uses-common-stage[data-vehicle-era="current"][data-vehicle-model="330li"][data-vehicle-color="accent"]
+        .vehicle-contact-shadow {
+        display: block;
+        bottom: 14px;
+        height: 44px;
+        opacity: 0.88;
+        background:
+          radial-gradient(ellipse 33px 6px at 44% 49%, rgba(12, 13, 16, 0.59) 0%, rgba(12, 13, 16, 0.28) 47%, transparent 78%),
+          radial-gradient(ellipse 27px 5px at 81% 15%, rgba(12, 13, 16, 0.54) 0%, rgba(12, 13, 16, 0.24) 47%, transparent 78%),
+          radial-gradient(ellipse 118px 10px at 63% 34%, rgba(20, 22, 26, 0.25) 0%, rgba(20, 22, 26, 0.11) 50%, transparent 84%),
+          radial-gradient(ellipse 164px 13px at 58% 45%, rgba(28, 30, 35, 0.16) 0%, rgba(28, 30, 35, 0.06) 54%, transparent 86%);
+        filter: blur(3px);
+        mix-blend-mode: multiply;
+      }
+
+      .screen.uses-common-stage .vehicle-stage-image {
+        object-fit: contain;
+        object-position: center center;
+        transform: translate(var(--vehicle-x, 0px), var(--vehicle-y, 0px))
+          scale(var(--vehicle-scale, 1));
+        transform-origin: center center;
+        filter: saturate(var(--vehicle-saturation, 1));
+      }
+
+      .vehicle-state-overlay {
+        display: none;
+        position: absolute;
+        z-index: 7;
+        pointer-events: none;
+      }
+
+      .screen:not([data-vehicle-state="opened"]) .vehicle-state-overlay {
+        display: block;
+      }
+
+      .status-strip-overlay {
+        left: 0;
+        top: 137px;
+        width: 430px;
+        height: 65px;
+        background: linear-gradient(180deg, #20264a 0%, #333957 100%);
+        z-index: 1;
+      }
+
+      .screen.uses-common-stage:not([data-vehicle-state="opened"]) .status-strip-overlay {
+        height: 288px;
+        background:
+          url("assets/vehicle-stage-bg.png") center bottom / 100% 224px no-repeat,
+          linear-gradient(180deg, #20264a 0%, #333957 22.222%, #333957 100%);
+      }
+
+      .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="letter-pink"]
+        .status-strip-overlay {
+        background:
+          linear-gradient(
+            180deg,
+            #524e54 0%,
+            #5b565a 4%,
+            #655e62 8%,
+            #74696f 14%,
+            #83767b 22.2%,
+            #918186 28%,
+            #9a898d 35.4%,
+            #a59295 42%,
+            #b29fa1 49.7%,
+            #c2b4b4 56.6%,
+            #d7ccce 63.9%,
+            #e2dcdc 71.2%,
+            #e6e3e4 78%,
+            #efedee 85%,
+            #f8f6f7 92%,
+            #faf9f9 96%,
+            #ffffff 100%
+          );
+      }
+
+      .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background^="letter-"]
+        .status-strip-overlay::after {
+        content: "ALL\A GOOD";
+        position: absolute;
+        left: 17px;
+        top: 80px;
+        width: 360px;
+        height: 160px;
+        color: rgba(255, 255, 255, 0.98);
+        white-space: pre;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 91px;
+        line-height: 0.76;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-align: left;
+        z-index: 0;
+      }
+
+      .screen.uses-common-stage:not([data-vehicle-state="opened"]) .vehicle-stage {
+        background: transparent;
+      }
+
+      .screen[data-vehicle-model="530li"][data-vehicle-color="black"][data-vehicle-background="original"]:not([data-vehicle-state="opened"])
+        .status-strip-overlay {
+        height: 288px;
+        background:
+          linear-gradient(
+            180deg,
+            #20264a 0,
+            #333957 65px,
+            rgba(51, 57, 87, 0.78) 67px,
+            rgba(51, 57, 87, 0) 76px,
+            transparent 100%
+          ),
+          url("assets/reference-screen@3x.jpg") left -137px / 430px 936px no-repeat;
+      }
+
+      .status-card-overlay {
+        left: 16px;
+        top: 425px;
+        width: 191px;
+        height: 118px;
+        border-radius: 6px;
+        background: #f2f2f2;
+        color: #111;
+      }
+
+      .status-card-title {
+        position: absolute;
+        left: 15px;
+        top: 11px;
+        font-size: 15px;
+        line-height: 20px;
+        font-weight: 750;
+      }
+
+      .status-card-subtitle {
+        position: absolute;
+        left: 15px;
+        top: 32px;
+        max-width: 160px;
+        color: #666;
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+
+      .status-card-normal-icon {
+        display: none;
+        position: absolute;
+        left: 24px;
+        bottom: 16px;
+        width: 30px;
+        height: 32px;
+      }
+
+      .status-card-shield-icon {
+        display: none;
+        position: absolute;
+        left: 18px;
+        bottom: 15px;
+        width: 33px;
+        height: 33px;
+      }
+
+      .status-actions-overlay {
+        left: 16px;
+        top: 550px;
+        width: 191px;
+        height: 49px;
+        grid-template-columns: 88px 88px;
+        gap: 16px;
+        background: #fff;
+      }
+
+      .screen:not([data-vehicle-state="opened"]) .status-actions-overlay {
+        display: grid;
+      }
+
+      .status-action-button {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 88px;
+        height: 47px;
+        border-radius: 5px;
+        background: #f2f2f2;
+        color: #111;
+      }
+
+      .status-action-button svg {
+        width: 26px;
+        height: 26px;
+        display: block;
+      }
+
+      .screen[data-vehicle-state="normal"] .status-action-lock {
+        background: #050505;
+        color: #fff;
+      }
+
+      .screen[data-vehicle-state="normal"] .status-card-normal-icon {
+        display: block;
+      }
+
+      .screen[data-vehicle-state="data-off"] .status-card-shield-icon {
+        display: block;
+      }
+
+      .screen[data-vehicle-state="data-off"] .fuel-progress {
+        visibility: hidden;
+      }
+
+      .fuel-disabled-progress-cover {
+        display: none;
+        position: absolute;
+        left: 238px;
+        top: 486px;
+        width: 162px;
+        height: 13px;
+        background: #f2f2f2;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .screen[data-vehicle-state="data-off"] .fuel-disabled-progress-cover {
+        display: block;
+      }
+
+      .vehicle-stage-image {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center center;
+        opacity: 1;
+        transition: opacity 0.18s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      .garage-panel {
+        position: absolute;
+        right: 16px;
+        top: 104px;
+        width: 268px;
+        max-height: 454px;
+        z-index: 28;
+        display: none;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(18, 22, 37, 0.94);
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+        -webkit-backdrop-filter: blur(18px) saturate(1.1);
+        backdrop-filter: blur(18px) saturate(1.1);
+        color: #fff;
+      }
+
+      .screen.is-garage-open .garage-panel {
+        display: block;
+      }
+
+      .garage-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 20px;
+        margin-bottom: 10px;
+        font-size: 12px;
+        line-height: 20px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      .garage-close {
+        width: 24px;
+        height: 24px;
+        border: 0;
+        border-radius: 50%;
+        padding: 0;
+        color: rgba(255, 255, 255, 0.78);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 18px;
+        line-height: 24px;
+      }
+
+      .garage-color-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .garage-color-row.is-classic {
+        grid-template-columns: 1fr;
+      }
+
+      .garage-background-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .garage-background {
+        height: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        padding: 0 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 10px;
+        line-height: 12px;
+        font-weight: 750;
+      }
+
+      .garage-background.is-active {
+        color: #111;
+        background: rgba(255, 255, 255, 0.94);
+      }
+
+      .garage-background-preview {
+        width: 16px;
+        height: 12px;
+        flex: 0 0 auto;
+        border-radius: 3px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+      }
+
+      .garage-background-preview-original {
+        background: linear-gradient(180deg, #444d6d 0%, #f3f3f4 100%);
+      }
+
+      .garage-background-preview-blue {
+        background:
+          linear-gradient(90deg, transparent 0 18%, rgba(255, 255, 255, 0.9) 18% 42%, transparent 42%),
+          linear-gradient(180deg, #444d6d 0%, #d9dbe3 100%);
+      }
+
+      .garage-background-preview-pink {
+        background:
+          linear-gradient(90deg, transparent 0 18%, rgba(255, 255, 255, 0.9) 18% 42%, transparent 42%),
+          linear-gradient(180deg, #655866 0%, #e0d5d8 100%);
+      }
+
+      .garage-color[hidden] {
+        display: none;
+      }
+
+      .garage-color {
+        height: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        padding: 0 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        color: rgba(255, 255, 255, 0.82);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 750;
+      }
+
+      .garage-color.is-active {
+        color: #111;
+        background: rgba(255, 255, 255, 0.94);
+      }
+
+      .garage-swatch {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.36);
+      }
+
+      .garage-swatch-black {
+        background: #111827;
+      }
+
+      .garage-swatch-white {
+        background: #f4f4f2;
+        box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.22);
+      }
+
+      .garage-swatch-accent {
+        background: var(--garage-accent-color, #68737d);
+      }
+
+      .garage-era-row,
+      .garage-category-row {
+        display: grid;
+        gap: 5px;
+        margin-bottom: 8px;
+      }
+
+      .garage-era-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .garage-category-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .garage-era,
+      .garage-category {
+        height: 30px;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 8px;
+        color: rgba(255, 255, 255, 0.68);
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 750;
+      }
+
+      .garage-era.is-active,
+      .garage-category.is-active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .garage-model-list {
+        display: grid;
+        gap: 7px;
+        max-height: 230px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 2px;
+      }
+
+      .garage-model {
+        min-height: 34px;
+        border: 0;
+        border-radius: 9px;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.78);
+        background: rgba(255, 255, 255, 0.07);
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 750;
+        letter-spacing: 0;
+        text-align: left;
+      }
+
+      .garage-model.is-active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .garage-model-code {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .garage-model-year {
+        flex: 0 0 auto;
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .garage-model-check {
+        opacity: 0;
+        font-size: 14px;
+      }
+
+      .garage-model.is-active .garage-model-check {
+        opacity: 1;
+      }
+
+      .map-soft-mask {
+        position: absolute;
+        left: 16px;
+        top: 740px;
+        width: 398px;
+        height: 112px;
+        display: none;
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.14));
+        -webkit-backdrop-filter: blur(0.45px);
+        backdrop-filter: blur(0.45px);
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      .native-statusbar-cover {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 52px;
+        display: none;
+        background: #20264a;
+        z-index: 30;
+      }
+
+      html.native-ios .native-statusbar-cover,
+      html.pwa-ios .native-statusbar-cover {
+        display: block;
+      }
+
+      html.native-ios .screen[data-vehicle-background="letter-pink"] .native-statusbar-cover,
+      html.pwa-ios .screen[data-vehicle-background="letter-pink"] .native-statusbar-cover {
+        background: #343335;
+      }
+
+      html.native-ios .system-time-cover,
+      html.native-ios .system-status,
+      html.native-ios .battery-cover,
+      html.native-ios .battery-status,
+      html.pwa-ios .system-time-cover,
+      html.pwa-ios .system-status,
+      html.pwa-ios .battery-cover,
+      html.pwa-ios .battery-status {
+        display: none;
+      }
+
+      .model-cover {
+        position: absolute;
+        left: 58px;
+        top: 72px;
+        width: 314px;
+        height: 28px;
+        background: #20264a;
+      }
+
+      .model-name {
+        position: absolute;
+        left: 38px;
+        top: 76px;
+        width: 354px;
+        height: 20px;
+        color: #fff;
+        font-size: 16px;
+        line-height: 20px;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-align: center;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+        white-space: nowrap;
+        transform: scaleX(var(--model-name-scale, 1));
+        transform-origin: center center;
+      }
+
+      .system-time-cover,
+      .updated-cover {
+        position: absolute;
+        background: #20264a;
+      }
+
+      .system-time-cover {
+        left: 47px;
+        top: 19px;
+        width: 76px;
+        height: 24px;
+      }
+
+      .system-status {
+        position: absolute;
+        left: 47px;
+        top: 20px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .system-time {
+        height: 22px;
+        color: #fff;
+        font-size: 18px;
+        line-height: 22px;
+        font-weight: 800;
+        letter-spacing: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .system-location-icon {
+        width: 12px;
+        height: 12px;
+        flex: 0 0 auto;
+        display: block;
+        transform: translateY(-1px);
+      }
+
+      .battery-cover {
+        position: absolute;
+        left: 355px;
+        top: 20px;
+        width: 42px;
+        height: 22px;
+        background: #20264a;
+      }
+
+      .battery-status {
+        position: absolute;
+        left: 356px;
+        top: 23px;
+        width: 39px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+      }
+
+      .battery-cover,
+      .battery-status {
+        opacity: 0;
+      }
+
+      .screen.has-live-battery .battery-cover,
+      .screen.has-live-battery .battery-status {
+        opacity: 1;
+      }
+
+      .battery-shell {
+        position: relative;
+        width: 31px;
+        height: 16px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.66);
+        color: #24263b;
+        font-size: 10px;
+        line-height: 16px;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-align: center;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .battery-shell::after {
+        content: "";
+        position: absolute;
+        right: -3px;
+        top: 5px;
+        width: 2px;
+        height: 6px;
+        border-radius: 0 2px 2px 0;
+        background: rgba(255, 255, 255, 0.58);
+      }
+
+      .battery-shell.is-low {
+        background: #ff453a;
+        color: #fff;
+      }
+
+      .battery-shell.is-charging::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 5px;
+        height: 9px;
+        background: #34c759;
+        clip-path: polygon(45% 0, 100% 0, 65% 42%, 100% 42%, 30% 100%, 50% 55%, 10% 55%);
+      }
+
+      .updated-cover {
+        left: 58px;
+        top: 106px;
+        width: 314px;
+        height: 34px;
+        background: linear-gradient(
+          90deg,
+          rgba(36, 43, 79, 0) 0%,
+          rgba(36, 43, 79, 0.96) 12%,
+          rgba(36, 43, 79, 0.96) 88%,
+          rgba(36, 43, 79, 0) 100%
+        );
+      }
+
+      .updated-text {
+        position: absolute;
+        left: 60px;
+        top: 113px;
+        width: 310px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.93);
+        font-size: 15px;
+        line-height: 20px;
+        font-weight: 400;
+        letter-spacing: 0;
+        text-align: center;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .updated-cover,
+      .updated-text {
+        opacity: 0;
+      }
+
+      .screen.has-custom-updated .updated-cover,
+      .screen.has-custom-updated .updated-text {
+        opacity: 1;
+      }
+
+      .fuel-progress {
+        position: absolute;
+        left: 239px;
+        top: 492px;
+        width: 159px;
+        height: 4px;
+        border-radius: 3px;
+        overflow: hidden;
+        background: #d8d8d8;
+        z-index: 3;
+      }
+
+      .fuel-progress-fill {
+        content: "";
+        position: relative;
+        display: block;
+        width: var(--fuel-width, 80%);
+        height: 100%;
+        border-radius: inherit;
+        background: #111;
+        z-index: 1;
+        transition: width 0.3s ease;
+      }
+
+      .fuel-progress-marker {
+        position: absolute;
+        left: var(--fuel-marker-left, 125.2px);
+        top: 0;
+        width: 2px;
+        height: 4px;
+        border-radius: 2px;
+        background: #111;
+        z-index: 1;
+        transition: left 0.3s ease;
+      }
+
+      .fuel-percent-cover,
+      .range-cover {
+        position: absolute;
+        background: #f2f2f2;
+        z-index: 1;
+      }
+
+      .fuel-percent-cover {
+        left: 239px;
+        top: 449px;
+        width: 56px;
+        height: 31px;
+      }
+
+      .range-cover {
+        left: 316px;
+        top: 494px;
+        width: 90px;
+        height: 42px;
+      }
+
+      .fuel-percent-text {
+        position: absolute;
+        left: 239px;
+        top: 451px;
+        min-width: 58px;
+        color: #666;
+        font-size: 14px;
+        line-height: 19px;
+        font-weight: 400;
+        letter-spacing: 0;
+        -webkit-font-smoothing: antialiased;
+        z-index: 2;
+      }
+
+      .range-text {
+        position: absolute;
+        right: 30px;
+        top: 503px;
+        height: 32px;
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-end;
+        gap: 3px;
+        color: #000;
+        letter-spacing: 0;
+        -webkit-font-smoothing: antialiased;
+        z-index: 4;
+      }
+
+      .range-value {
+        font-size: 31px;
+        line-height: 32px;
+        font-weight: 850;
+      }
+
+      .range-unit {
+        font-size: 11px;
+        line-height: 12px;
+        font-weight: 500;
+      }
+
+      .map-label-cover,
+      .map-label-text {
+        position: absolute;
+        z-index: 5;
+        display: none;
+        pointer-events: none;
+      }
+
+      .map-generated-layer {
+        position: absolute;
+        left: 16px;
+        top: 740px;
+        width: 398px;
+        height: 112px;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #f5f8f9;
+        z-index: 5;
+        isolation: isolate;
+        pointer-events: none;
+        box-shadow:
+          inset 0 0 0 1px rgba(230, 235, 238, 0.52),
+          inset 0 18px 24px rgba(255, 255, 255, 0.32);
+      }
+
+      .map-generated-layer::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        background:
+          url("assets/map-preview.jpg") center / cover no-repeat,
+          linear-gradient(135deg, #f7fafb, #edf4f7);
+        filter: blur(1.6px) saturate(0.72) brightness(1.08);
+        opacity: 0.18;
+        z-index: 0;
+      }
+
+      .map-generated-layer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.18) 34%, rgba(255, 255, 255, 0.08) 100%),
+          radial-gradient(circle at 32% 44%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 34%),
+          radial-gradient(circle at 83% 0%, rgba(213, 230, 236, 0.4), rgba(255, 255, 255, 0) 36%);
+        z-index: 2;
+      }
+
+      .map-vector {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.96;
+        filter: blur(0.05px);
+      }
+
+      .map-card-title,
+      .map-card-subtitle,
+      .map-provider,
+      .map-parking {
+        position: absolute;
+        z-index: 6;
+        letter-spacing: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .map-card-title {
+        left: 16px;
+        top: 13px;
+        color: #111;
+        font-size: 14px;
+        line-height: 17px;
+        font-weight: 800;
+      }
+
+      .map-card-subtitle {
+        left: 16px;
+        top: 32px;
+        color: #6a6d72;
+        font-size: 12px;
+        line-height: 15px;
+        font-weight: 400;
+      }
+
+      .map-provider {
+        left: 28px;
+        top: 82px;
+        color: rgba(96, 112, 126, 0.28);
+        font-size: 10px;
+        line-height: 12px;
+        font-weight: 500;
+      }
+
+      .map-parking {
+        left: 4px;
+        bottom: -2px;
+        width: 16px;
+        height: 16px;
+        border: 1px solid rgba(20, 28, 38, 0.28);
+        border-radius: 3px;
+        color: rgba(10, 18, 28, 0.7);
+        background: rgba(255, 255, 255, 0.78);
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .map-car-marker {
+        position: absolute;
+        left: 249px;
+        top: 17px;
+        width: 77px;
+        height: 67px;
+        z-index: 9;
+        display: block;
+        object-fit: contain;
+        filter: saturate(0.96) brightness(1.02);
+        opacity: 0.98;
+      }
+
+      .screen.map-community-custom .map-label-cover-community,
+      .screen.map-community-custom .map-label-community,
+      .screen.map-police-custom .map-label-cover-police,
+      .screen.map-police-custom .map-label-police,
+      .screen.map-road-custom .map-label-cover-road,
+      .screen.map-road-custom .map-label-road,
+      .map-label-cover-town {
+        display: block;
+      }
+
+      .map-label-cover {
+        border-radius: 4px;
+        background: rgba(246, 250, 251, 0.84);
+        -webkit-backdrop-filter: blur(3.8px) saturate(0.82) brightness(1.05);
+        backdrop-filter: blur(3.8px) saturate(0.82) brightness(1.05);
+        box-shadow:
+          0 0 6px 3px rgba(246, 250, 251, 0.68),
+          inset 0 0 8px rgba(255, 255, 255, 0.38);
+      }
+
+      .map-label-cover-community {
+        left: 101px;
+        top: 771px;
+        width: 88px;
+        height: 27px;
+      }
+
+      .map-label-cover-police {
+        left: 236px;
+        top: 738px;
+        width: 122px;
+        height: 25px;
+      }
+
+      .map-label-cover-road {
+        left: 139px;
+        top: 799px;
+        width: 112px;
+        height: 30px;
+        transform: rotate(-9deg);
+      }
+
+      .map-label-cover-town {
+        left: 392px;
+        top: 814px;
+        width: 22px;
+        height: 31px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.44);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        mix-blend-mode: screen;
+        box-shadow: none;
+      }
+
+      .map-label-text {
+        z-index: 7;
+        color: rgba(70, 80, 90, 0.38);
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 500;
+        letter-spacing: 0;
+        white-space: nowrap;
+        -webkit-font-smoothing: antialiased;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.82);
+        transform-origin: left center;
+        will-change: transform;
+      }
+
+      .map-generated-layer .map-label-text {
+        display: block;
+      }
+
+      .map-label-community {
+        left: 91px;
+        top: 36px;
+        transform: scaleX(var(--map-community-scale, 1));
+      }
+
+      .map-label-police {
+        left: 228px;
+        top: 5px;
+        transform: scaleX(var(--map-police-scale, 1));
+      }
+
+      .map-label-road {
+        left: 132px;
+        top: 66px;
+        transform: rotate(-9deg) scaleX(var(--map-road-scale, 1));
+        transform-origin: left center;
+      }
+
+      .screen.no-transition .fuel-progress-fill,
+      .screen.no-transition .fuel-progress-marker {
+        transition: none;
+      }
+
+      .edit-panel {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        z-index: 20;
+        display: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        max-height: min(430px, calc(100% - 88px));
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .screen.is-editing .edit-panel {
+        display: grid;
+      }
+
+      .edit-panel label {
+        display: grid;
+        gap: 5px;
+        color: #202020;
+        font-size: 11px;
+        line-height: 1.1;
+        font-weight: 700;
+      }
+
+      .edit-panel label:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .edit-panel input,
+      .edit-panel select {
+        width: 100%;
+        height: 36px;
+        border: 1px solid #d8d8d8;
+        border-radius: 8px;
+        padding: 0 10px;
+        background: #f7f7f7;
+        color: #111;
+        font: inherit;
+        font-size: 20px;
+        line-height: 20px;
+        outline: none;
+        -webkit-user-select: text;
+        user-select: text;
+      }
+
+      .edit-panel select {
+        padding-right: 30px;
+        appearance: auto;
+        -webkit-appearance: menulist;
+      }
+
+      .edit-field-wide {
+        grid-column: 1 / -1;
+      }
+
+      .edit-actions {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .edit-actions button {
+        height: 38px;
+        border: 0;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 750;
+      }
+
+      .edit-cancel {
+        color: #111;
+        background: #eeeeee;
+      }
+
+      .edit-save {
+        color: #fff;
+        background: #111;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="viewport">
+    <main class="screen" data-vehicle-state="opened" aria-label="myBMW 530Li static simulator">
+      <img class="reference-base" src="assets/reference-screen@3x.jpg" alt="" />
+      <div class="background-theme-overlay" aria-hidden="true"></div>
+      <div class="background-theme-lighting" aria-hidden="true"></div>
+      <div class="vehicle-stage" aria-hidden="true">
+        <span class="vehicle-contact-shadow"></span>
+        <img class="vehicle-stage-image" id="vehicleStageImage" src="assets/models/530li-black.jpg" alt="" />
+      </div>
+      <div class="native-statusbar-cover" aria-hidden="true"></div>
+      <div class="system-time-cover" aria-hidden="true"></div>
+      <div class="system-status" aria-label="系统时间">
+        <span class="system-time" id="systemTime">10:31</span>
+        <svg class="system-location-icon" viewBox="0 0 14 14" aria-hidden="true">
+          <path fill="#fff" d="M12.4 1.5 1.6 6.2c-.45.2-.42.85.04 1l4.08 1.26 1.24 4.01c.14.46.78.5.98.05L12.9 2.18c.2-.42-.08-.88-.5-.68Z" />
+        </svg>
+      </div>
+      <div class="battery-cover" aria-hidden="true"></div>
+      <div class="battery-status" aria-label="系统电量">
+        <div class="battery-shell" id="batteryShell"><span id="batteryPercentText">25</span></div>
+      </div>
+      <div class="model-cover" aria-hidden="true"></div>
+      <div class="model-name">530Li Sedan CHN</div>
+      <div class="updated-cover" aria-hidden="true"></div>
+      <div class="updated-text" id="updatedText">2026/6/30 21:23已从车辆更新</div>
+      <div class="vehicle-state-overlay status-strip-overlay" aria-hidden="true"></div>
+      <div class="vehicle-state-overlay status-card-overlay" aria-hidden="true">
+        <span class="status-card-title">状态</span>
+        <span class="status-card-subtitle" id="statusCardSubtitle">已打开</span>
+        <svg class="status-card-normal-icon" viewBox="0 0 32 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 15v-4a8 8 0 0 1 16 0v4" />
+          <rect x="5" y="15" width="22" height="17" rx="2.5" />
+          <path d="M16 21v5" />
+        </svg>
+        <svg class="status-card-shield-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 3.5 32 8v9.2c0 7.7-4.7 13.8-12 17.6-7.3-3.8-12-9.9-12-17.6V8l12-4.5Z" />
+          <path d="m16 15 9 9m0-9-9 9" />
+        </svg>
+      </div>
+      <div class="vehicle-state-overlay status-actions-overlay" aria-hidden="true">
+        <span class="status-action-button status-action-lock">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13V9.5a6 6 0 0 1 12 0V13" />
+            <rect x="7.5" y="13" width="17" height="13" rx="2" />
+            <path d="M16 18v4" />
+          </svg>
+        </span>
+        <span class="status-action-button status-action-unlock">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13V9.5a6 6 0 0 1 11-3.2" />
+            <rect x="7.5" y="13" width="17" height="13" rx="2" />
+            <path d="M16 18v4" />
+          </svg>
+        </span>
+      </div>
+      <div class="fuel-percent-cover" aria-hidden="true"></div>
+      <div class="fuel-percent-text" id="fuelPercentText">80 %</div>
+      <div class="fuel-progress" aria-hidden="true">
+        <span class="fuel-progress-fill" id="fuelProgressFill"></span>
+        <span class="fuel-progress-marker"></span>
+      </div>
+      <div class="fuel-disabled-progress-cover" aria-hidden="true"></div>
+      <div class="range-cover" aria-hidden="true"></div>
+      <div class="range-text" aria-label="续航里程">
+        <span class="range-value" id="rangeValue">662</span>
+        <span class="range-unit">km</span>
+      </div>
+      <div class="map-generated-layer" aria-hidden="true">
+        <svg class="map-vector" viewBox="0 0 398 112" preserveAspectRatio="none">
+          <rect width="398" height="112" fill="#f6f9fa" />
+          <path d="M-22 93 C55 78 106 76 168 60 C225 46 296 42 421 34" fill="none" stroke="#d8eef5" stroke-width="20" opacity=".44" />
+          <path d="M-15 88 C64 76 128 69 196 55 C267 40 328 38 418 32" fill="none" stroke="#ffffff" stroke-width="9" opacity=".88" />
+          <path d="M-15 88 C64 76 128 69 196 55 C267 40 328 38 418 32" fill="none" stroke="#bfd6df" stroke-width="1.5" opacity=".38" />
+          <path d="M98 108 C135 82 179 63 224 47 C272 30 323 20 407 13" fill="none" stroke="#e7edf0" stroke-width="18" opacity=".76" />
+          <path d="M98 108 C135 82 179 63 224 47 C272 30 323 20 407 13" fill="none" stroke="#ffffff" stroke-width="8" opacity=".88" />
+          <path d="M204 112 C229 87 261 68 303 51 C335 38 365 31 414 26" fill="none" stroke="#dbeff5" stroke-width="15" opacity=".32" />
+          <path d="M204 112 C229 87 261 68 303 51 C335 38 365 31 414 26" fill="none" stroke="#ffffff" stroke-width="6" opacity=".72" />
+          <path d="M45 -10 L70 111 M163 -16 L187 116 M276 -10 L296 112 M360 -12 L376 113" fill="none" stroke="#e4eaed" stroke-width="1.2" opacity=".58" />
+          <path d="M10 54 L386 9 M-4 75 L380 71 M23 102 L330 87" fill="none" stroke="#e9eef0" stroke-width="1.2" opacity=".54" />
+          <path d="M24 44 L82 37 L86 63 L27 69 Z M214 34 L292 23 L306 62 L226 73 Z M88 28 L158 18 L171 50 L99 62 Z M249 78 L355 61 L374 101 L263 112 Z" fill="#eef3f5" opacity=".5" />
+          <path d="M230 39 L289 31 M236 50 L298 41 M242 61 L306 52 M266 81 L354 68 M270 92 L362 80" fill="none" stroke="#f8fbfc" stroke-width="3" opacity=".5" />
+        </svg>
+        <div class="map-card-title">我的BMW在哪里？</div>
+        <div class="map-card-subtitle">已停放</div>
+        <span class="map-label-text map-label-community" id="mapCommunityText">千禧花苑</span>
+        <span class="map-label-text map-label-police" id="mapPoliceText">城南派出所</span>
+        <span class="map-label-text map-label-road" id="mapRoadText">秀才港路</span>
+        <span class="map-provider">腾讯地图</span>
+        <span class="map-parking">P</span>
+        <img class="map-car-marker" src="assets/map-car-marker-ref.png" alt="" />
+      </div>
+      <button class="edit-hotspot edit-hotspot-updated" type="button" aria-label="编辑车辆更新时间"></button>
+      <button class="edit-hotspot edit-hotspot-status-strip" type="button" aria-label="编辑车辆状态"></button>
+      <button class="edit-hotspot edit-hotspot-status-card" type="button" aria-label="编辑车辆状态"></button>
+      <button class="edit-hotspot edit-hotspot-fuel" type="button" aria-label="编辑油位和续航"></button>
+      <button class="edit-hotspot edit-hotspot-map" type="button" aria-label="编辑地图标注"></button>
+      <button class="edit-hotspot vehicle-switch-hotspot" id="vehicleSwitchHotspot" type="button" aria-label="切换车型和颜色"></button>
+      <section class="garage-panel" id="garagePanel" aria-label="切换车型和颜色">
+        <div class="garage-title">
+          <span>车辆</span>
+          <button class="garage-close" id="garageClose" type="button" aria-label="关闭">×</button>
+        </div>
+        <div class="garage-era-row" id="garageEraRow">
+          <button class="garage-era" type="button" data-era="current">当前款</button>
+          <button class="garage-era" type="button" data-era="classic">19–22款</button>
+        </div>
+        <div class="garage-category-row" id="garageCategoryRow">
+          <button class="garage-category" type="button" data-category="sedan">轿车</button>
+          <button class="garage-category" type="button" data-category="coupe">轿跑 / M</button>
+          <button class="garage-category" type="button" data-category="suv">SUV</button>
+        </div>
+        <div class="garage-color-row" id="garageColorRow">
+          <button class="garage-color" type="button" data-color="black">
+            <span class="garage-swatch garage-swatch-black"></span>
+            <span>黑色</span>
+          </button>
+          <button class="garage-color" type="button" data-color="white">
+            <span class="garage-swatch garage-swatch-white"></span>
+            <span>白色</span>
+          </button>
+          <button class="garage-color" type="button" data-color="accent">
+            <span class="garage-swatch garage-swatch-accent"></span>
+            <span>常用色</span>
+          </button>
+        </div>
+        <div class="garage-background-row" id="garageBackgroundRow" aria-label="车辆背景">
+          <button class="garage-background" type="button" data-background="original">
+            <span class="garage-background-preview garage-background-preview-original"></span>
+            <span>原版</span>
+          </button>
+          <button class="garage-background" type="button" data-background="letter-blue">
+            <span class="garage-background-preview garage-background-preview-blue"></span>
+            <span>蓝调字</span>
+          </button>
+          <button class="garage-background" type="button" data-background="letter-pink">
+            <span class="garage-background-preview garage-background-preview-pink"></span>
+            <span>粉调字</span>
+          </button>
+        </div>
+        <div class="garage-model-list" id="garageModelList"></div>
+      </section>
+      <form class="edit-panel" id="editPanel" aria-label="编辑模拟数据">
+        <label class="edit-field-wide">车辆状态
+          <select id="editVehicleState">
+            <option value="normal">一切正常</option>
+            <option value="opened">车门已打开</option>
+            <option value="data-off">车辆数据已关闭</option>
+          </select>
+        </label>
+        <label class="edit-field-wide">车辆更新时间<input id="editLastUpdated" autocomplete="off" /></label>
+        <label>油位 %<input id="editFuelPercent" inputmode="numeric" type="number" min="0" max="100" step="1" /></label>
+        <label>续航 km<input id="editRangeKm" inputmode="numeric" type="number" min="0" step="1" /></label>
+        <label>道路<input id="editMapRoad" autocomplete="off" /></label>
+        <label>小区<input id="editMapCommunity" autocomplete="off" /></label>
+        <label>派出所<input id="editMapPolice" autocomplete="off" /></label>
+        <div class="edit-actions">
+          <button class="edit-cancel" id="editCancel" type="button">取消</button>
+          <button class="edit-save" type="submit">保存</button>
+        </div>
+      </form>
+    </main>
+    </div>
+
+    <script>
+      const FULL_RANGE_KM = 827;
+      const FUEL_TRACK_WIDTH = 159;
+      const FUEL_MARKER_WIDTH = 2;
+      const STORAGE_KEY = "mybmw-530-data";
+      const GARAGE_STORAGE_KEY = "mybmw-garage-state";
+      const VEHICLE_STATE_VALUES = new Set(["normal", "opened", "data-off"]);
+      const VEHICLE_LAYER_TUNING = {
+        "530li-black": { scale: 1.02, x: 0, y: 2 },
+        "530li-white": { scale: 1.12, x: 0, y: 2 },
+        "x3-black": { scale: 1.42, x: 0, y: 2, saturation: 0 },
+        "x3-white": { scale: 1.42, x: 0, y: 2, saturation: 0 },
+        "x5-black": { scale: 1.18, x: 0, y: 2, saturation: 0 },
+        "x5-white": { scale: 1.18, x: 0, y: 2, saturation: 0 },
+        "330li-black": { scale: 1, x: 0, y: 1, saturation: 0 },
+        "330li-white": { scale: 1.08, x: 0, y: 1, saturation: 0 },
+        "325li-black": { scale: 1.08, x: 0, y: 2, saturation: 0 },
+        "325li-white": { scale: 1.08, x: 0, y: 2, saturation: 0 },
+        "430i-black": { scale: 1.08, x: 0, y: 2, saturation: 0 },
+        "430i-white": { scale: 1.08, x: 0, y: 2, saturation: 0 },
+        "m3-black": { scale: 1.1, x: 0, y: 2, saturation: 0 },
+        "m3-white": { scale: 1.1, x: 0, y: 2, saturation: 0 },
+        "630i-black": { scale: 1, x: 0, y: 0 },
+        "630i-white": { scale: 1, x: 0, y: 0 },
+        "m4-black": { scale: 1.03, x: 0, y: 2 },
+        "m4-white": { scale: 1.16, x: 0, y: 3 },
+        "325li-accent": { scale: 1.06, x: 0, y: 2 },
+        "330li-accent": { scale: 1.07, x: 0, y: 2 },
+        "430i-accent": { scale: 1.1, x: 0, y: 2 },
+        "530li-accent": { scale: 1.14, x: 0, y: 2 },
+        "630i-accent": { scale: 1.02, x: 0, y: 2 },
+        "m3-accent": { scale: 1.15, x: 0, y: 2 },
+        "m4-accent": { scale: 1.22, x: 0, y: 2 },
+        "x3-accent": { scale: 1.42, x: 0, y: 2 },
+        "x5-accent": { scale: 1.15, x: 0, y: 2 },
+        "m2-black": { scale: 1.04, x: 0, y: 2 },
+        "m2-white": { scale: 1.04, x: 0, y: 2 },
+        "m2-accent": { scale: 1.09, x: 0, y: 2 },
+        "m240i-black": { scale: 1.04, x: 0, y: 2 },
+        "m240i-white": { scale: 1.04, x: 0, y: 2 },
+        "m240i-accent": { scale: 1.01, x: 0, y: 2 },
+        "730li-black": { scale: 1.09, x: 0, y: 2 },
+        "730li-white": { scale: 1.02, x: 0, y: 2 },
+        "730li-accent": { scale: 1.04, x: 0, y: 2 },
+        "325li-classic-accent": { scale: 1.14, x: 0, y: 2 },
+        "330li-classic-accent": { scale: 1.07, x: 0, y: 2 },
+        "430i-classic-accent": { scale: 1.12, x: 0, y: 2 },
+        "530li-classic-accent": { scale: 1.15, x: 0, y: 2 },
+        "630i-classic-accent": { scale: 1.13, x: 0, y: 2 },
+        "730li-classic-accent": { scale: 1.06, x: 0, y: 2 },
+        "m2-classic-accent": { scale: 1.07, x: 0, y: 2 },
+        "m240i-classic-accent": { scale: 1.09, x: 0, y: 2 },
+        "m3-classic-accent": { scale: 1.16, x: 0, y: 2 },
+        "m4-classic-accent": { scale: 1.04, x: 0, y: 2 },
+        "x3-classic-accent": { scale: 1.04, x: 0, y: 2 },
+        "x5-classic-accent": { scale: 1.08, x: 0, y: 2 },
+      };
+      const DEBOUNCE_MS = 300;
+      const VEHICLE_MODELS = [
+        { id: "325li", shortName: "325Li", category: "sedan", currentName: "325Li Sedan LWB CHN", classicName: "325Li Sedan LWB CHN", accent: "#66717f" },
+        { id: "330li", shortName: "330Li", category: "sedan", currentName: "330Li Sedan LWB CHN", classicName: "330Li Sedan LWB CHN", accent: "#31577c" },
+        { id: "530li", shortName: "530Li", category: "sedan", currentName: "530Li Sedan CHN", classicName: "530Li Sedan LWB CHN", accent: "#59636c" },
+        { id: "630i", shortName: "630i GT", category: "sedan", currentName: "630i Gran Turismo", classicName: "630i Gran Turismo", accent: "#697068" },
+        { id: "730li", shortName: "730Li", category: "sedan", currentName: "730Li Sedan CHN", classicName: "730Li Sedan CHN", accent: "#505c66" },
+        { id: "430i", shortName: "430i", category: "coupe", currentName: "430i Coupe", classicName: "430i Coupe", accent: "#285b82" },
+        { id: "m240i", shortName: "M240i", category: "coupe", currentName: "M240i xDrive Coupe", classicName: "M240i Coupe", accent: "#5e416f" },
+        { id: "m2", shortName: "M2", category: "coupe", currentName: "M2 Coupe", classicName: "M2 Competition Coupe", accent: "#477c9b" },
+        { id: "m3", shortName: "M3", category: "coupe", currentName: "M3 Competition Sedan", classicName: "M3 Competition Sedan", accent: "#315f49" },
+        { id: "m4", shortName: "M4", category: "coupe", currentName: "M4 Competition M xDrive Coupe", classicName: "M4 Competition Coupe", accent: "#8a9650" },
+        { id: "x3", shortName: "X3", category: "suv", currentName: "X3 xDrive30L CHN", classicName: "X3 xDrive30i", accent: "#53697c" },
+        { id: "x5", shortName: "X5", category: "suv", currentName: "X5 xDrive40i", classicName: "X5 xDrive40i", accent: "#626c73" }
+      ];
+      const root = document.querySelector(".screen");
+      const systemTime = document.querySelector("#systemTime");
+      const batteryShell = document.querySelector("#batteryShell");
+      const batteryPercentText = document.querySelector("#batteryPercentText");
+      const updatedText = document.querySelector("#updatedText");
+      const modelName = document.querySelector(".model-name");
+      const vehicleStageImage = document.querySelector("#vehicleStageImage");
+      const vehicleSwitchHotspot = document.querySelector("#vehicleSwitchHotspot");
+      const garagePanel = document.querySelector("#garagePanel");
+      const garageClose = document.querySelector("#garageClose");
+      const garageModelList = document.querySelector("#garageModelList");
+      const garageEraButtons = [...document.querySelectorAll(".garage-era")];
+      const garageCategoryButtons = [...document.querySelectorAll(".garage-category")];
+      const garageColorButtons = [...document.querySelectorAll(".garage-color")];
+      const garageBackgroundButtons = [...document.querySelectorAll(".garage-background")];
+      const garageAccentSwatch = document.querySelector(".garage-swatch-accent");
+      const fuelPercentText = document.querySelector("#fuelPercentText");
+      const rangeValue = document.querySelector("#rangeValue");
+      const statusCardSubtitle = document.querySelector("#statusCardSubtitle");
+      const editPanel = document.querySelector("#editPanel");
+      const editVehicleState = document.querySelector("#editVehicleState");
+      const editLastUpdated = document.querySelector("#editLastUpdated");
+      const editFuelPercent = document.querySelector("#editFuelPercent");
+      const editRangeKm = document.querySelector("#editRangeKm");
+      const editMapRoad = document.querySelector("#editMapRoad");
+      const editMapCommunity = document.querySelector("#editMapCommunity");
+      const editMapPolice = document.querySelector("#editMapPolice");
+      const mapRoadText = document.querySelector("#mapRoadText");
+      const mapCommunityText = document.querySelector("#mapCommunityText");
+      const mapPoliceText = document.querySelector("#mapPoliceText");
+      let renderTimer = 0;
+      let currentVehicle = null;
+      let editPressTimer = 0;
+      let editorSnapshot = null;
+      let lastEditorFuelSource = "fuelPercent";
+      let garageState = readGarageState();
+      let garageCategory = selectedGarageModel().category;
+
+      const fallback = {
+        vehicle: {
+          model: "530Li Sedan CHN",
+          lastUpdated: "2026/6/30 21:23已从车辆更新",
+          fullRangeKm: FULL_RANGE_KM,
+          fuelPercent: 80,
+          rangeKm: 662,
+          vehicleState: "opened",
+          mapRoad: "秀才港路",
+          mapCommunity: "千禧花苑",
+          mapPolice: "城南派出所"
+        }
+      };
+
+      function clamp(value, min, max) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return min;
+        return Math.min(max, Math.max(min, number));
+      }
+
+      function calculateFuelState(values, source = "fuelPercent", fullRangeKm = FULL_RANGE_KM) {
+        const rangeBase = Math.max(1, Number(fullRangeKm || FULL_RANGE_KM));
+        if (source === "rangeKm") {
+          const rangeKm = Math.round(clamp(values.rangeKm, 0, rangeBase));
+          const fuelPercent = Math.round((rangeKm / rangeBase) * 100);
+          return { fullRangeKm: rangeBase, fuelPercent, rangeKm };
+        }
+
+        const fuelPercent = Math.round(clamp(values.fuelPercent, 0, 100));
+        const rangeKm = Math.round((fuelPercent / 100) * rangeBase);
+        return { fullRangeKm: rangeBase, fuelPercent, rangeKm };
+      }
+
+      function normalizeUpdatedText(value) {
+        const text = String(value || "").trim();
+        if (!text) return fallback.vehicle.lastUpdated;
+        const compact = text
+          .replace(/[.-]/g, "/")
+          .replace(/\s+/g, " ")
+          .replace(/\s*已从车辆更新\s*$/, "");
+        return `${compact}已从车辆更新`;
+      }
+
+      function normalizeVehicle(vehicle, source = "fuelPercent") {
+        const fullRangeKm = Math.max(1, Number(vehicle.fullRangeKm || FULL_RANGE_KM));
+        const fuelState = calculateFuelState(vehicle, source, fullRangeKm);
+        const legacyDoorStates = {
+          "已打开": "opened",
+          "一切正常": "normal",
+          "已关闭": "normal",
+          "已锁止": "normal",
+          "车辆数据已关闭": "data-off"
+        };
+        const rawState = String(vehicle.vehicleState || legacyDoorStates[vehicle.doors] || "opened").trim().toLowerCase();
+        const stateAliases = {
+          open: "opened",
+          unlocked: "opened",
+          close: "normal",
+          closed: "normal",
+          lock: "normal",
+          locked: "normal",
+          offline: "data-off",
+          disabled: "data-off"
+        };
+        const aliasedState = stateAliases[rawState] || rawState;
+        const vehicleState = VEHICLE_STATE_VALUES.has(aliasedState) ? aliasedState : "opened";
+        const doorsByState = {
+          normal: "一切正常",
+          opened: "已打开",
+          "data-off": "车辆数据已关闭"
+        };
+        return { ...vehicle, ...fuelState, vehicleState, doors: doorsByState[vehicleState] };
+      }
+
+      function readGarageState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(GARAGE_STORAGE_KEY) || "{}");
+          const modelId = VEHICLE_MODELS.some((model) => model.id === saved.modelId) ? saved.modelId : "530li";
+          const color = ["black", "white", "accent"].includes(saved.color) ? saved.color : "black";
+          const era = saved.era === "classic" ? "classic" : "current";
+          const background = ["original", "letter-blue", "letter-pink"].includes(saved.background)
+            ? saved.background
+            : "original";
+          return { modelId, color: era === "classic" ? "accent" : color, era, background };
+        } catch (err) {
+          return { modelId: "530li", color: "black", era: "current", background: "original" };
+        }
+      }
+
+      function persistGarageState() {
+        localStorage.setItem(GARAGE_STORAGE_KEY, JSON.stringify(garageState));
+      }
+
+      function selectedGarageModel() {
+        return VEHICLE_MODELS.find((model) => model.id === garageState.modelId) || VEHICLE_MODELS[0];
+      }
+
+      function selectedGarageModelName() {
+        const model = selectedGarageModel();
+        return garageState.era === "classic" ? model.classicName : model.currentName;
+      }
+
+      function selectedGarageAssetId() {
+        return garageState.era === "classic" ? `${garageState.modelId}-classic` : garageState.modelId;
+      }
+
+      function modelImagePath(modelId = garageState.modelId, color = garageState.color) {
+        return `assets/models/${modelId}-${color}.jpg`;
+      }
+
+      function modelLayerPath(modelId = garageState.modelId, color = garageState.color) {
+        return `assets/vehicle-layers/${modelId}-${color}.png`;
+      }
+
+      function fallbackModelImagePath() {
+        return `assets/models/530li-${garageState.color === "white" ? "white" : "black"}.jpg`;
+      }
+
+      function fitModelName() {
+        root.style.setProperty("--model-name-scale", "1");
+        requestAnimationFrame(() => {
+          const scale = Math.min(1, 330 / Math.max(1, modelName.scrollWidth));
+          root.style.setProperty("--model-name-scale", scale.toFixed(3));
+        });
+      }
+
+      function renderModelName(name) {
+        modelName.textContent = name || selectedGarageModelName();
+        fitModelName();
+      }
+
+      function renderGaragePanel() {
+        const visibleModels = VEHICLE_MODELS.filter((model) => model.category === garageCategory);
+        garageModelList.innerHTML = visibleModels.map(
+          (model) => `
+            <button class="garage-model" type="button" data-model-id="${model.id}">
+              <span class="garage-model-code">${model.shortName}</span>
+              <span class="garage-model-year">${garageState.era === "classic" ? "19–22" : "当前"}</span>
+              <span class="garage-model-check">✓</span>
+            </button>
+          `
+        ).join("");
+        garageEraButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.era === garageState.era);
+        });
+        const colorRow = document.querySelector("#garageColorRow");
+        if (colorRow) colorRow.classList.toggle("is-classic", garageState.era === "classic");
+        garageColorButtons.forEach((button) => {
+          button.hidden = garageState.era === "classic" && button.dataset.color !== "accent";
+          const label = button.querySelector("span:last-child");
+          if (label && button.dataset.color === "accent") {
+            label.textContent = garageState.era === "classic" ? "经典色" : "常用色";
+          }
+        });
+        garageCategoryButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.category === garageCategory);
+        });
+        garageBackgroundButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.background === garageState.background);
+        });
+      }
+
+      function renderGarageState() {
+        const selected = selectedGarageModel();
+        const assetId = selectedGarageAssetId();
+        const modelDisplayName = selectedGarageModelName();
+        const isReferenceBaseVehicle = assetId === "530li" && garageState.color === "black";
+        const isBaseVehicle = isReferenceBaseVehicle && garageState.background === "original";
+        const layerKey = `${assetId}-${garageState.color}`;
+        const usesCommonStage = !isBaseVehicle;
+        const layerTuning = VEHICLE_LAYER_TUNING[layerKey] || { scale: 1.08, x: 0, y: 2 };
+        const hasLetterBackground = garageState.background.startsWith("letter-");
+        const letterScaleByVehicle = {
+          "730li-black": 1.02,
+          "730li-white": 1.06,
+          "730li-accent": 1.04,
+        };
+        const backgroundScale = hasLetterBackground ? (letterScaleByVehicle[layerKey] ?? 0.96) : 1;
+        const renderedScale = layerTuning.scale * backgroundScale;
+        const renderedY = layerTuning.y + (hasLetterBackground ? 5 : 0);
+        root.dataset.vehicleModel = assetId;
+        root.dataset.vehicleBaseModel = selected.id;
+        root.dataset.vehicleEra = garageState.era;
+        root.dataset.vehicleColor = garageState.color;
+        root.dataset.vehicleBackground = garageState.background;
+        root.style.setProperty("--vehicle-scale", renderedScale.toFixed(3));
+        root.style.setProperty("--vehicle-x", `${layerTuning.x}px`);
+        root.style.setProperty("--vehicle-y", `${renderedY}px`);
+        root.style.setProperty("--vehicle-saturation", layerTuning.saturation ?? 1);
+        root.style.setProperty("--garage-accent-color", selected.accent);
+        if (garageAccentSwatch) garageAccentSwatch.style.background = selected.accent;
+        renderModelName(modelDisplayName);
+        root.classList.toggle("has-custom-vehicle", !isBaseVehicle);
+        root.classList.toggle("uses-common-stage", usesCommonStage);
+        vehicleStageImage.src = isBaseVehicle
+          ? "assets/models/530li-black.jpg"
+          : usesCommonStage
+            ? modelLayerPath(assetId, garageState.color)
+            : modelImagePath(assetId, garageState.color);
+        vehicleStageImage.dataset.fallbackSrc = modelLayerPath(
+          garageState.era === "classic" ? `${selected.id}-classic` : selected.id,
+          garageState.color === "accent" ? "black" : garageState.color
+        );
+        garageColorButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.color === garageState.color);
+        });
+        garageModelList.querySelectorAll(".garage-model").forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.modelId === selected.id);
+        });
+        if (currentVehicle) currentVehicle.model = modelDisplayName;
+      }
+
+      function openGarage() {
+        closeEditor(true);
+        garageCategory = selectedGarageModel().category;
+        renderGaragePanel();
+        renderGarageState();
+        root.classList.add("is-garage-open");
+      }
+
+      function closeGarage() {
+        root.classList.remove("is-garage-open");
+      }
+
+      function setGarageState(next) {
+        garageState = { ...garageState, ...next };
+        persistGarageState();
+        renderGaragePanel();
+        renderGarageState();
+        if (currentVehicle) persistVehicleData({ ...currentVehicle, model: selectedGarageModelName() });
+      }
+
+      function renderFuel(vehicle, animate = true) {
+        const normalized = normalizeVehicle(vehicle);
+        currentVehicle = { ...(currentVehicle || fallback.vehicle), ...normalized };
+        if (!animate) root.classList.add("no-transition");
+        root.style.setProperty("--fuel-percent", normalized.fuelPercent);
+        root.style.setProperty("--fuel-width", `${normalized.fuelPercent}%`);
+        root.style.setProperty(
+          "--fuel-marker-left",
+          `${Math.max(0, (FUEL_TRACK_WIDTH * normalized.fuelPercent) / 100 - FUEL_MARKER_WIDTH)}px`
+        );
+        const dataIsOff = normalized.vehicleState === "data-off";
+        fuelPercentText.textContent = dataIsOff ? "--" : `${normalized.fuelPercent} %`;
+        rangeValue.textContent = dataIsOff ? "--" : normalized.rangeKm;
+        if (!animate) {
+          requestAnimationFrame(() => root.classList.remove("no-transition"));
+        }
+      }
+
+      function renderVehicleState(vehicle) {
+        const state = VEHICLE_STATE_VALUES.has(vehicle.vehicleState) ? vehicle.vehicleState : "opened";
+        const labels = {
+          normal: "一切正常",
+          opened: "已打开",
+          "data-off": "车辆数据已关闭"
+        };
+        root.dataset.vehicleState = state;
+        statusCardSubtitle.textContent = labels[state];
+      }
+
+      function formatSystemTime(date = new Date()) {
+        const hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${hours}:${minutes}`;
+      }
+
+      function syncSystemTime() {
+        systemTime.textContent = formatSystemTime();
+      }
+
+      function fitViewport() {
+        const nativeIOS = document.documentElement.classList.contains("native-ios") || window.__MYBMW_NATIVE_IOS__;
+        const widthScale = window.innerWidth / 430;
+        const heightScale = window.innerHeight / 936;
+        const scale = Math.min(widthScale, heightScale, nativeIOS ? 1.04 : 1);
+        const nearReferenceRatio = Math.abs(widthScale - heightScale) < 0.035;
+        const scaleX = nativeIOS && nearReferenceRatio ? widthScale : scale;
+        const scaleY = nativeIOS && nearReferenceRatio ? heightScale : scale;
+        document.documentElement.style.setProperty("--app-scale-x", String(Math.max(0.1, scaleX)));
+        document.documentElement.style.setProperty("--app-scale-y", String(Math.max(0.1, scaleY)));
+        document.documentElement.style.setProperty("--native-offset-y", "0px");
+      }
+
+      function renderBatteryStatus(battery) {
+        const percent = Math.round(clamp(battery.level * 100, 0, 100));
+        batteryPercentText.textContent = percent;
+        batteryShell.classList.toggle("is-low", percent <= 20 && !battery.charging);
+        batteryShell.classList.toggle("is-charging", Boolean(battery.charging));
+        root.classList.add("has-live-battery");
+      }
+
+      function fitMapLabelText() {
+        root.style.setProperty("--map-community-scale", "1");
+        root.style.setProperty("--map-police-scale", "1");
+        root.style.setProperty("--map-road-scale", "1");
+        requestAnimationFrame(() => {
+          const scaleFor = (element, maxWidth) => Math.min(1, maxWidth / Math.max(1, element.scrollWidth));
+          root.style.setProperty("--map-community-scale", scaleFor(mapCommunityText, 110).toFixed(3));
+          root.style.setProperty("--map-police-scale", scaleFor(mapPoliceText, 124).toFixed(3));
+          root.style.setProperty("--map-road-scale", scaleFor(mapRoadText, 112).toFixed(3));
+        });
+      }
+
+      function renderMapLabels(vehicle) {
+        const mapRoad = vehicle.mapRoad || fallback.vehicle.mapRoad;
+        const mapCommunity = vehicle.mapCommunity || fallback.vehicle.mapCommunity;
+        const mapPolice = vehicle.mapPolice || fallback.vehicle.mapPolice;
+        mapRoadText.textContent = mapRoad;
+        mapCommunityText.textContent = mapCommunity;
+        mapPoliceText.textContent = mapPolice;
+        root.classList.toggle("map-road-custom", mapRoad !== fallback.vehicle.mapRoad);
+        root.classList.toggle("map-community-custom", mapCommunity !== fallback.vehicle.mapCommunity);
+        root.classList.toggle("map-police-custom", mapPolice !== fallback.vehicle.mapPolice);
+        fitMapLabelText();
+      }
+
+      window.setNativeBatteryStatus = function setNativeBatteryStatus(status) {
+        renderBatteryStatus({
+          level: Number(status.level),
+          charging: Boolean(status.charging)
+        });
+      };
+
+      function applyVehicleData(vehicle, animate = true, source = "fuelPercent") {
+        currentVehicle = normalizeVehicle({ ...(currentVehicle || fallback.vehicle), ...vehicle }, source);
+        currentVehicle.model = selectedGarageModelName();
+        renderGarageState();
+        const lastUpdated = normalizeUpdatedText(currentVehicle.lastUpdated || fallback.vehicle.lastUpdated);
+        currentVehicle.lastUpdated = lastUpdated;
+        updatedText.textContent = lastUpdated;
+        root.classList.toggle("has-custom-updated", lastUpdated !== fallback.vehicle.lastUpdated);
+        renderMapLabels(currentVehicle);
+        renderVehicleState(currentVehicle);
+        renderFuel(currentVehicle, animate);
+      }
+
+      function persistVehicleData(vehicle) {
+        const data = { vehicle };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
+      window.setNativeVehicleData = function setNativeVehicleData(vehicle) {
+        applyVehicleData(vehicle, true, vehicle.rangeKm != null && vehicle.fuelPercent == null ? "rangeKm" : "fuelPercent");
+        persistVehicleData(currentVehicle);
+      };
+
+      window.setNativeDefaultVehicleData = function setNativeDefaultVehicleData(vehicle) {
+        if (localStorage.getItem(STORAGE_KEY)) return;
+        applyVehicleData(vehicle, false, vehicle.rangeKm != null && vehicle.fuelPercent == null ? "rangeKm" : "fuelPercent");
+        persistVehicleData(currentVehicle);
+      };
+
+      function openEditor() {
+        const vehicle = currentVehicle || fallback.vehicle;
+        editorSnapshot = { ...vehicle };
+        lastEditorFuelSource = "fuelPercent";
+        editVehicleState.value = vehicle.vehicleState || "opened";
+        editLastUpdated.value = vehicle.lastUpdated || fallback.vehicle.lastUpdated;
+        editFuelPercent.value = vehicle.fuelPercent;
+        editRangeKm.value = vehicle.rangeKm;
+        editMapRoad.value = vehicle.mapRoad || fallback.vehicle.mapRoad;
+        editMapCommunity.value = vehicle.mapCommunity || fallback.vehicle.mapCommunity;
+        editMapPolice.value = vehicle.mapPolice || fallback.vehicle.mapPolice;
+        root.classList.add("is-editing");
+      }
+
+      function readEditorVehicle(source = lastEditorFuelSource) {
+        const vehicle = {
+          ...(currentVehicle || fallback.vehicle),
+          vehicleState: editVehicleState.value,
+          lastUpdated: normalizeUpdatedText(editLastUpdated.value || fallback.vehicle.lastUpdated),
+          fuelPercent: Number(editFuelPercent.value || 0),
+          rangeKm: Number(editRangeKm.value || 0),
+          mapRoad: editMapRoad.value.trim() || fallback.vehicle.mapRoad,
+          mapCommunity: editMapCommunity.value.trim() || fallback.vehicle.mapCommunity,
+          mapPolice: editMapPolice.value.trim() || fallback.vehicle.mapPolice,
+          fullRangeKm: FULL_RANGE_KM
+        };
+        vehicle.location = `${vehicle.mapPolice} · ${vehicle.mapRoad}`;
+        return normalizeVehicle(vehicle, source);
+      }
+
+      function previewEditorData(source = lastEditorFuelSource) {
+        if (!root.classList.contains("is-editing")) return;
+        lastEditorFuelSource = source;
+        applyVehicleData(readEditorVehicle(source), true, source);
+      }
+
+      function closeEditor(restoreSnapshot = false) {
+        clearTimeout(renderTimer);
+        if (restoreSnapshot && editorSnapshot) {
+          applyVehicleData(editorSnapshot, true);
+        }
+        editorSnapshot = null;
+        if (document.activeElement && typeof document.activeElement.blur === "function") {
+          document.activeElement.blur();
+        }
+        root.classList.remove("is-editing");
+        window.scrollTo(0, 0);
+        requestAnimationFrame(() => {
+          fitViewport();
+          window.scrollTo(0, 0);
+        });
+        setTimeout(() => {
+          fitViewport();
+          window.scrollTo(0, 0);
+        }, 120);
+      }
+
+      async function syncBatteryStatus() {
+        if (!("getBattery" in navigator)) {
+          root.classList.remove("has-live-battery");
+          return false;
+        }
+
+        try {
+          const battery = await navigator.getBattery();
+          const update = () => renderBatteryStatus(battery);
+          update();
+          battery.addEventListener("levelchange", update);
+          battery.addEventListener("chargingchange", update);
+          return true;
+        } catch (err) {
+          root.classList.remove("has-live-battery");
+          return false;
+        }
+      }
+
+      function scheduleRender(vehicle, source = "fuel") {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(() => {
+          renderFuel(normalizeVehicle(vehicle, source === "range" ? "rangeKm" : "fuelPercent"));
+        }, DEBOUNCE_MS);
+      }
+
+      async function loadData() {
+        let data = fallback;
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          data = JSON.parse(saved);
+        }
+
+        try {
+          if (location.protocol !== "file:" || !saved) {
+            const apiPath = location.protocol === "file:" ? "vehicle-data.json" : "/api/data";
+            const res = await fetch(apiPath, { cache: "no-store" });
+            if (res.ok) data = await res.json();
+          }
+        } catch (err) {
+          if (saved) data = JSON.parse(saved);
+        }
+
+        const vehicle = data.vehicle || fallback.vehicle;
+        applyVehicleData(vehicle, false);
+      }
+
+      window.addEventListener("storage", (event) => {
+        if (event.key !== STORAGE_KEY || !event.newValue) return;
+        const data = JSON.parse(event.newValue);
+        applyVehicleData(data.vehicle || fallback.vehicle);
+      });
+
+      editVehicleState.addEventListener("change", () => {
+        previewEditorData(lastEditorFuelSource);
+      });
+
+      editFuelPercent.addEventListener("input", () => {
+        lastEditorFuelSource = "fuelPercent";
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(() => {
+          const fuelState = calculateFuelState({ fuelPercent: editFuelPercent.value }, "fuelPercent", FULL_RANGE_KM);
+          editFuelPercent.value = fuelState.fuelPercent;
+          editRangeKm.value = fuelState.rangeKm;
+          previewEditorData("fuelPercent");
+        }, DEBOUNCE_MS);
+      });
+
+      editRangeKm.addEventListener("input", () => {
+        lastEditorFuelSource = "rangeKm";
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(() => {
+          const fuelState = calculateFuelState({ rangeKm: editRangeKm.value }, "rangeKm", FULL_RANGE_KM);
+          editFuelPercent.value = fuelState.fuelPercent;
+          editRangeKm.value = fuelState.rangeKm;
+          previewEditorData("rangeKm");
+        }, DEBOUNCE_MS);
+      });
+
+      [editLastUpdated, editMapRoad, editMapCommunity, editMapPolice].forEach((field) => {
+        field.addEventListener("input", () => {
+          clearTimeout(renderTimer);
+          renderTimer = setTimeout(() => previewEditorData(lastEditorFuelSource), DEBOUNCE_MS);
+        });
+      });
+
+      editPanel.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const vehicle = readEditorVehicle(lastEditorFuelSource);
+        applyVehicleData(vehicle, true, lastEditorFuelSource);
+        persistVehicleData(currentVehicle);
+        closeEditor(false);
+      });
+
+      document.querySelector("#editCancel").addEventListener("click", () => closeEditor(true));
+
+      vehicleStageImage.addEventListener("error", () => {
+        if (vehicleStageImage.src.endsWith(vehicleStageImage.dataset.fallbackSrc || "")) return;
+        vehicleStageImage.src = vehicleStageImage.dataset.fallbackSrc || "assets/models/530li-black.jpg";
+      });
+
+      vehicleSwitchHotspot.addEventListener("click", (event) => {
+        event.stopPropagation();
+        root.classList.contains("is-garage-open") ? closeGarage() : openGarage();
+      });
+
+      garageClose.addEventListener("click", (event) => {
+        event.stopPropagation();
+        closeGarage();
+      });
+
+      garageColorButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const color = ["black", "white", "accent"].includes(button.dataset.color)
+            ? button.dataset.color
+            : "black";
+          setGarageState({ color });
+        });
+      });
+
+      garageBackgroundButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const background = ["original", "letter-blue", "letter-pink"].includes(button.dataset.background)
+            ? button.dataset.background
+            : "original";
+          setGarageState({ background });
+        });
+      });
+
+      garageEraButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const era = button.dataset.era === "classic" ? "classic" : "current";
+          setGarageState({ era, ...(era === "classic" ? { color: "accent" } : {}) });
+        });
+      });
+
+      garageCategoryButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const category = ["sedan", "coupe", "suv"].includes(button.dataset.category)
+            ? button.dataset.category
+            : "sedan";
+          garageCategory = category;
+          const firstModel = VEHICLE_MODELS.find((model) => model.category === category);
+          if (firstModel && selectedGarageModel().category !== category) {
+            setGarageState({ modelId: firstModel.id });
+          } else {
+            renderGaragePanel();
+            renderGarageState();
+          }
+        });
+      });
+
+      garageModelList.addEventListener("click", (event) => {
+        const button = event.target.closest(".garage-model");
+        if (!button) return;
+        event.stopPropagation();
+        setGarageState({ modelId: button.dataset.modelId });
+      });
+
+      document.querySelectorAll(".edit-hotspot:not(.vehicle-switch-hotspot)").forEach((hotspot) => {
+        hotspot.addEventListener("click", openEditor);
+        hotspot.addEventListener("contextmenu", (event) => event.preventDefault());
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!root.classList.contains("is-garage-open")) return;
+        if (event.target.closest("#garagePanel, #vehicleSwitchHotspot")) return;
+        closeGarage();
+      });
+
+      document.addEventListener("contextmenu", (event) => event.preventDefault());
+      document.addEventListener("dragstart", (event) => event.preventDefault());
+      document.addEventListener("selectstart", (event) => event.preventDefault());
+
+      root.addEventListener("pointerdown", (event) => {
+        if (event.target.closest(".vehicle-switch-hotspot, .garage-panel")) return;
+        if (!event.target.closest(".model-name, .updated-text, .fuel-percent-text, .range-text, .edit-hotspot")) return;
+        editPressTimer = setTimeout(openEditor, 650);
+      });
+
+      root.addEventListener("pointerup", () => clearTimeout(editPressTimer));
+      root.addEventListener("pointercancel", () => clearTimeout(editPressTimer));
+
+      window.addEventListener("resize", fitViewport);
+      if ("serviceWorker" in navigator && location.protocol !== "file:") {
+        let reloadingForUpdate = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (reloadingForUpdate) return;
+          reloadingForUpdate = true;
+          location.reload();
+        });
+        navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
+          .then((registration) => registration.update())
+          .catch(() => {});
+      }
+      renderGaragePanel();
+      renderGarageState();
+      fitViewport();
+      syncSystemTime();
+      setInterval(syncSystemTime, 1000);
+      syncBatteryStatus();
+      loadData();
+    </script>
+  </body>
+</html>
