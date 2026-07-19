@@ -2054,13 +2054,18 @@
       }
 
       function fitViewport() {
+        const pwaIOS = document.documentElement.classList.contains("pwa-ios");
         const nativeIOS = document.documentElement.classList.contains("native-ios") || window.__MYBMW_NATIVE_IOS__;
         const widthScale = window.innerWidth / 430;
         const heightScale = window.innerHeight / 936;
         const scale = Math.min(widthScale, heightScale, nativeIOS ? 1.04 : 1);
         const nearReferenceRatio = Math.abs(widthScale - heightScale) < 0.035;
-        const scaleX = nativeIOS && nearReferenceRatio ? widthScale : scale;
-        const scaleY = nativeIOS && nearReferenceRatio ? heightScale : scale;
+        // Standalone iOS PWAs report a viewport whose usable height can differ
+        // substantially from the physical screen because of system safe areas.
+        // Filling each axis independently matches the native WKWebView layout and
+        // prevents the uniform scale from leaving white rails on both sides.
+        const scaleX = pwaIOS ? widthScale : (nativeIOS && nearReferenceRatio ? widthScale : scale);
+        const scaleY = pwaIOS ? heightScale : (nativeIOS && nearReferenceRatio ? heightScale : scale);
         document.documentElement.style.setProperty("--app-scale-x", String(Math.max(0.1, scaleX)));
         document.documentElement.style.setProperty("--app-scale-y", String(Math.max(0.1, scaleY)));
         document.documentElement.style.setProperty("--native-offset-y", "0px");
