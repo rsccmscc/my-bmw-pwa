@@ -12,10 +12,11 @@
     <link rel="apple-touch-icon" href="./assets/pwa/icon-180.png" />
     <title>My BMW</title>
     <script>
-      if (window.__MYBMW_NATIVE_IOS__ || new URLSearchParams(location.search).get("native") === "1") {
+      const launchParams = new URLSearchParams(location.search);
+      if (window.__MYBMW_NATIVE_IOS__ || launchParams.get("native") === "1") {
         document.documentElement.classList.add("native-ios");
       }
-      if (window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches) {
+      if (window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches || launchParams.get("pwa") === "1") {
         document.documentElement.classList.add("pwa-ios");
       }
     </script>
@@ -80,6 +81,26 @@
       html.native-ios .screen,
       html.pwa-ios .screen {
         box-shadow: none;
+      }
+
+      .pwa-bottom-nav {
+        display: none;
+      }
+
+      html.pwa-ios .pwa-bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 15;
+        display: block;
+        width: 100vw;
+        height: auto;
+        pointer-events: none;
+      }
+
+      html.pwa-ios .screen.is-editing + .pwa-bottom-nav {
+        display: none;
       }
 
       .reference-base {
@@ -414,6 +435,15 @@
           scale(var(--vehicle-scale, 1));
         transform-origin: center center;
         filter: saturate(var(--vehicle-saturation, 1));
+      }
+
+      html.pwa-ios .screen.uses-common-stage .vehicle-stage-image {
+        position: absolute;
+        left: var(--vehicle-render-left, 0px);
+        top: var(--vehicle-render-top, 0px);
+        width: var(--vehicle-render-width, 430px);
+        height: var(--vehicle-render-height, 224px);
+        transform: none;
       }
 
       .vehicle-state-overlay {
@@ -1670,6 +1700,7 @@
         </div>
       </form>
     </main>
+      <img class="pwa-bottom-nav" src="assets/bottom-nav-ref.png" alt="" aria-hidden="true" />
     </div>
 
     <script>
@@ -1961,6 +1992,9 @@
         };
         const backgroundScale = hasLetterBackground ? (letterScaleByVehicle[layerKey] ?? 0.96) : 1;
         const renderedScale = layerTuning.scale * backgroundScale;
+        const renderedWidth = 430 * renderedScale;
+        const renderedHeight = 224 * renderedScale;
+        const renderedX = layerTuning.x;
         const renderedY = layerTuning.y + (hasLetterBackground ? 5 : 0);
         root.dataset.vehicleModel = assetId;
         root.dataset.vehicleBaseModel = selected.id;
@@ -1968,8 +2002,12 @@
         root.dataset.vehicleColor = garageState.color;
         root.dataset.vehicleBackground = garageState.background;
         root.style.setProperty("--vehicle-scale", renderedScale.toFixed(3));
-        root.style.setProperty("--vehicle-x", `${layerTuning.x}px`);
+        root.style.setProperty("--vehicle-x", `${renderedX}px`);
         root.style.setProperty("--vehicle-y", `${renderedY}px`);
+        root.style.setProperty("--vehicle-render-width", `${renderedWidth.toFixed(3)}px`);
+        root.style.setProperty("--vehicle-render-height", `${renderedHeight.toFixed(3)}px`);
+        root.style.setProperty("--vehicle-render-left", `${((430 - renderedWidth) / 2 + renderedX).toFixed(3)}px`);
+        root.style.setProperty("--vehicle-render-top", `${((224 - renderedHeight) / 2 + renderedY).toFixed(3)}px`);
         root.style.setProperty("--vehicle-saturation", layerTuning.saturation ?? 1);
         root.style.setProperty("--garage-accent-color", selected.accent);
         if (garageAccentSwatch) garageAccentSwatch.style.background = selected.accent;
