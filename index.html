@@ -2060,12 +2060,12 @@
         const heightScale = window.innerHeight / 936;
         const scale = Math.min(widthScale, heightScale, nativeIOS ? 1.04 : 1);
         const nearReferenceRatio = Math.abs(widthScale - heightScale) < 0.035;
-        // Standalone iOS PWAs report a viewport whose usable height can differ
-        // substantially from the physical screen because of system safe areas.
-        // Filling each axis independently matches the native WKWebView layout and
-        // prevents the uniform scale from leaving white rails on both sides.
-        const scaleX = pwaIOS ? widthScale : (nativeIOS && nearReferenceRatio ? widthScale : scale);
-        const scaleY = pwaIOS ? heightScale : (nativeIOS && nearReferenceRatio ? heightScale : scale);
+        // Standalone iOS PWAs report less usable height because of system safe
+        // areas. Fit them by width and crop only the unused bottom of the fixed
+        // canvas. Keeping a uniform scale avoids stretching/rasterising text.
+        const pwaScale = widthScale;
+        const scaleX = pwaIOS ? pwaScale : (nativeIOS && nearReferenceRatio ? widthScale : scale);
+        const scaleY = pwaIOS ? pwaScale : (nativeIOS && nearReferenceRatio ? heightScale : scale);
         document.documentElement.style.setProperty("--app-scale-x", String(Math.max(0.1, scaleX)));
         document.documentElement.style.setProperty("--app-scale-y", String(Math.max(0.1, scaleY)));
         document.documentElement.style.setProperty("--native-offset-y", "0px");
