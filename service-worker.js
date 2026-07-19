@@ -1,10 +1,20 @@
-const CACHE_NAME = "my-bmw-pwa-v4";
+const CACHE_NAME = "my-bmw-pwa-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./vehicle-data.json",
+  "./assets/bell-ref.png",
   "./assets/bottom-nav-ref.png",
+  "./assets/btn-horn-ref.png",
+  "./assets/btn-light-ref.png",
+  "./assets/fan-ref.png",
+  "./assets/fuel-ref.png",
+  "./assets/remote-car-ref.png",
+  "./assets/status-icon-group.png",
+  "./assets/strip-lock-ref.png",
+  "./assets/top-car-ref.png",
+  "./assets/vehicle-stage-bg.png",
   "./assets/pwa/icon-180.png",
   "./assets/pwa/icon-512.png"
 ];

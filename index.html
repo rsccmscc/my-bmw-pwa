@@ -103,6 +103,17 @@
         display: none;
       }
 
+      html:not(.native-ios):not(.pwa-ios) .pwa-bottom-nav {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: 15;
+        display: block;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+      }
+
       .reference-base {
         position: absolute;
         inset: 0;
@@ -437,13 +448,227 @@
         filter: saturate(var(--vehicle-saturation, 1));
       }
 
-      html.pwa-ios .screen.uses-common-stage .vehicle-stage-image {
+      html:not(.native-ios) .screen.uses-common-stage .vehicle-stage-image {
         position: absolute;
         left: var(--vehicle-render-left, 0px);
         top: var(--vehicle-render-top, 0px);
         width: var(--vehicle-render-width, 430px);
         height: var(--vehicle-render-height, 224px);
         transform: none;
+      }
+
+      .status-card-opened-icon,
+      .status-action-horn,
+      .status-action-light,
+      .crisp-web-ui {
+        display: none;
+      }
+
+      html:not(.native-ios) .reference-base {
+        display: none;
+      }
+
+      html:not(.native-ios) .screen {
+        background: linear-gradient(180deg, #20264a 0 201px, #fff 201px 100%);
+      }
+
+      html:not(.native-ios) .crisp-web-ui {
+        display: block;
+      }
+
+      .crisp-top-icon {
+        position: absolute;
+        z-index: 6;
+        display: block;
+        object-fit: contain;
+        pointer-events: none;
+      }
+
+      .crisp-top-bell {
+        left: 18px;
+        top: 68px;
+        width: 24px;
+        height: 30px;
+      }
+
+      .crisp-top-car {
+        right: 17px;
+        top: 73px;
+        width: 32px;
+        height: 22px;
+      }
+
+      html:not(.native-ios) .updated-cover,
+      html:not(.native-ios) .updated-text {
+        opacity: 1;
+      }
+
+      html:not(.native-ios) .status-strip-overlay {
+        display: none;
+      }
+
+      html:not(.native-ios) .screen:not([data-vehicle-state="opened"]) .status-strip-overlay {
+        display: none;
+      }
+
+      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-strip-overlay {
+        left: 16px;
+        top: 139px;
+        width: 398px;
+        height: 62px;
+        z-index: 6;
+        display: block;
+        overflow: hidden;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #080b16, #0b0e19);
+      }
+
+      .status-strip-icon {
+        position: absolute;
+        left: 18px;
+        top: 10px;
+        width: 30px;
+        height: 34px;
+        object-fit: contain;
+      }
+
+      .status-strip-text {
+        position: absolute;
+        left: 67px;
+        top: 13px;
+        color: #fff;
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: 750;
+        letter-spacing: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      html:not(.native-ios) .status-card-overlay {
+        z-index: 7;
+        display: block;
+      }
+
+      html:not(.native-ios) .status-actions-overlay {
+        left: 16px;
+        top: 550px;
+        width: 398px;
+        z-index: 7;
+        display: grid;
+        grid-template-columns: repeat(4, 88px);
+        gap: 15px;
+      }
+
+      html:not(.native-ios) .status-action-horn,
+      html:not(.native-ios) .status-action-light {
+        display: grid;
+      }
+
+      html:not(.native-ios) .status-action-button img {
+        display: block;
+        width: auto;
+        max-width: 25px;
+        height: 22px;
+        object-fit: contain;
+      }
+
+      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-action-unlock,
+      html:not(.native-ios) .screen[data-vehicle-state="normal"] .status-action-lock {
+        color: #fff;
+        background: #050505;
+      }
+
+      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-action-lock,
+      html:not(.native-ios) .screen[data-vehicle-state="normal"] .status-action-unlock {
+        color: #111;
+        background: #f2f2f2;
+      }
+
+      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-card-opened-icon {
+        position: absolute;
+        left: 15px;
+        bottom: 14px;
+        display: block;
+        width: 50px;
+        height: 30px;
+        object-fit: contain;
+      }
+
+      .crisp-fuel-card,
+      .crisp-feature-card {
+        position: absolute;
+        z-index: 2;
+        border-radius: 6px;
+        background: #f2f2f2;
+        color: #111;
+        pointer-events: none;
+      }
+
+      .crisp-fuel-card {
+        left: 223px;
+        top: 425px;
+        width: 191px;
+        height: 118px;
+      }
+
+      .crisp-feature-card {
+        top: 615px;
+        width: 191px;
+        height: 110px;
+      }
+
+      .crisp-ventilation-card {
+        left: 16px;
+      }
+
+      .crisp-remote-card {
+        left: 223px;
+      }
+
+      .crisp-card-title,
+      .crisp-card-subtitle {
+        position: absolute;
+        left: 15px;
+        letter-spacing: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .crisp-card-title {
+        top: 11px;
+        font-size: 15px;
+        line-height: 20px;
+        font-weight: 750;
+      }
+
+      .crisp-card-subtitle {
+        top: 32px;
+        color: #666;
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 400;
+      }
+
+      .crisp-card-icon {
+        position: absolute;
+        left: 16px;
+        bottom: 14px;
+        display: block;
+        object-fit: contain;
+      }
+
+      .crisp-fuel-icon {
+        width: 20px;
+        height: 23px;
+      }
+
+      .crisp-fan-icon {
+        width: 23px;
+        height: 18px;
+      }
+
+      .crisp-remote-icon {
+        width: 24px;
+        height: 20px;
       }
 
       .vehicle-state-overlay {
@@ -1536,6 +1761,36 @@
         color: #fff;
         background: #111;
       }
+
+      html:not(.native-ios) .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="original"]
+        .vehicle-stage,
+      html:not(.native-ios) .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="letter-blue"]
+        .vehicle-stage {
+        background: url("assets/vehicle-stage-bg.png") center / 100% 100% no-repeat;
+      }
+
+      html:not(.native-ios) .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="letter-pink"]
+        .vehicle-stage {
+        background:
+          radial-gradient(ellipse 18% 62% at 31% 14%, rgba(255, 255, 255, 0.09), transparent 72%),
+          radial-gradient(ellipse 15% 58% at 68% 18%, rgba(255, 255, 255, 0.06), transparent 74%),
+          linear-gradient(
+            180deg,
+            #83767b 0%,
+            #918186 8%,
+            #9a898d 17%,
+            #a59295 26%,
+            #b29fa1 35%,
+            #c2b4b4 44%,
+            #d7ccce 54%,
+            #e2dcdc 63%,
+            #e6e3e4 72%,
+            #efedee 81%,
+            #f8f6f7 90%,
+            #faf9f9 96%,
+            #ffffff 100%
+          );
+      }
     </style>
   </head>
   <body>
@@ -1564,10 +1819,14 @@
       <div class="model-name">530Li Sedan CHN</div>
       <div class="updated-cover" aria-hidden="true"></div>
       <div class="updated-text" id="updatedText">2026/6/30 21:23已从车辆更新</div>
-      <div class="vehicle-state-overlay status-strip-overlay" aria-hidden="true"></div>
+      <div class="vehicle-state-overlay status-strip-overlay" aria-hidden="true">
+        <img class="status-strip-icon" src="assets/strip-lock-ref.png" alt="" />
+        <span class="status-strip-text" id="statusStripText">已打开</span>
+      </div>
       <div class="vehicle-state-overlay status-card-overlay" aria-hidden="true">
         <span class="status-card-title">状态</span>
         <span class="status-card-subtitle" id="statusCardSubtitle">已打开</span>
+        <img class="status-card-opened-icon" src="assets/status-icon-group.png" alt="" />
         <svg class="status-card-normal-icon" viewBox="0 0 32 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 15v-4a8 8 0 0 1 16 0v4" />
           <rect x="5" y="15" width="22" height="17" rx="2.5" />
@@ -1593,6 +1852,30 @@
             <path d="M16 18v4" />
           </svg>
         </span>
+        <span class="status-action-button status-action-horn">
+          <img src="assets/btn-horn-ref.png" alt="" />
+        </span>
+        <span class="status-action-button status-action-light">
+          <img src="assets/btn-light-ref.png" alt="" />
+        </span>
+      </div>
+      <div class="crisp-web-ui" aria-hidden="true">
+        <img class="crisp-top-icon crisp-top-bell" src="assets/bell-ref.png" alt="" />
+        <img class="crisp-top-icon crisp-top-car" src="assets/top-car-ref.png" alt="" />
+        <div class="crisp-fuel-card">
+          <span class="crisp-card-title">油位</span>
+          <img class="crisp-card-icon crisp-fuel-icon" src="assets/fuel-ref.png" alt="" />
+        </div>
+        <div class="crisp-feature-card crisp-ventilation-card">
+          <span class="crisp-card-title">通风</span>
+          <span class="crisp-card-subtitle">关闭</span>
+          <img class="crisp-card-icon crisp-fan-icon" src="assets/fan-ref.png" alt="" />
+        </div>
+        <div class="crisp-feature-card crisp-remote-card">
+          <span class="crisp-card-title">远程功能</span>
+          <span class="crisp-card-subtitle">远距离车控</span>
+          <img class="crisp-card-icon crisp-remote-icon" src="assets/remote-car-ref.png" alt="" />
+        </div>
       </div>
       <div class="fuel-percent-cover" aria-hidden="true"></div>
       <div class="fuel-percent-text" id="fuelPercentText">80 %</div>
@@ -1794,6 +2077,7 @@
       const fuelPercentText = document.querySelector("#fuelPercentText");
       const rangeValue = document.querySelector("#rangeValue");
       const statusCardSubtitle = document.querySelector("#statusCardSubtitle");
+      const statusStripText = document.querySelector("#statusStripText");
       const editPanel = document.querySelector("#editPanel");
       const editVehicleState = document.querySelector("#editVehicleState");
       const editLastUpdated = document.querySelector("#editLastUpdated");
@@ -1982,7 +2266,8 @@
         const isReferenceBaseVehicle = assetId === "530li" && garageState.color === "black";
         const isBaseVehicle = isReferenceBaseVehicle && garageState.background === "original";
         const layerKey = `${assetId}-${garageState.color}`;
-        const usesCommonStage = !isBaseVehicle;
+        const crispWebMode = !document.documentElement.classList.contains("native-ios");
+        const usesCommonStage = crispWebMode || !isBaseVehicle;
         const layerTuning = VEHICLE_LAYER_TUNING[layerKey] || { scale: 1.08, x: 0, y: 2 };
         const hasLetterBackground = garageState.background.startsWith("letter-");
         const letterScaleByVehicle = {
@@ -2012,12 +2297,12 @@
         root.style.setProperty("--garage-accent-color", selected.accent);
         if (garageAccentSwatch) garageAccentSwatch.style.background = selected.accent;
         renderModelName(modelDisplayName);
-        root.classList.toggle("has-custom-vehicle", !isBaseVehicle);
+        root.classList.toggle("has-custom-vehicle", crispWebMode || !isBaseVehicle);
         root.classList.toggle("uses-common-stage", usesCommonStage);
-        vehicleStageImage.src = isBaseVehicle
-          ? "assets/models/530li-black.jpg"
-          : usesCommonStage
-            ? modelLayerPath(assetId, garageState.color)
+        vehicleStageImage.src = usesCommonStage
+          ? modelLayerPath(assetId, garageState.color)
+          : isBaseVehicle
+            ? "assets/models/530li-black.jpg"
             : modelImagePath(assetId, garageState.color);
         vehicleStageImage.dataset.fallbackSrc = modelLayerPath(
           garageState.era === "classic" ? `${selected.id}-classic` : selected.id,
@@ -2079,6 +2364,7 @@
         };
         root.dataset.vehicleState = state;
         statusCardSubtitle.textContent = labels[state];
+        statusStripText.textContent = labels[state];
       }
 
       function formatSystemTime(date = new Date()) {
