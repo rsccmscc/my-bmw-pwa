@@ -23,7 +23,6 @@
     <style>
       :root {
         color-scheme: light;
-        --pwa-hidden-bottom: 0px;
         font-family:
           "BMW Type Next", "BMWTypeNext", "Helvetica Neue",
           "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
@@ -84,6 +83,17 @@
         box-shadow: none;
       }
 
+      html.native-ios .viewport,
+      html.pwa-ios .viewport {
+        height: calc(936px * var(--app-scale-x, 1));
+      }
+
+      html.native-ios .screen,
+      html.pwa-ios .screen {
+        transform: none;
+        zoom: var(--app-scale-x, 1);
+      }
+
       .pwa-bottom-nav {
         display: none;
       }
@@ -102,17 +112,6 @@
 
       html.pwa-ios .screen.is-editing + .pwa-bottom-nav {
         display: none;
-      }
-
-      html:not(.native-ios):not(.pwa-ios) .pwa-bottom-nav {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        z-index: 15;
-        display: block;
-        width: 100%;
-        height: auto;
-        pointer-events: none;
       }
 
       .reference-base {
@@ -449,305 +448,13 @@
         filter: saturate(var(--vehicle-saturation, 1));
       }
 
-      html:not(.native-ios) .screen.uses-common-stage .vehicle-stage-image {
+      html.pwa-ios .screen.uses-common-stage .vehicle-stage-image {
         position: absolute;
         left: var(--vehicle-render-left, 0px);
         top: var(--vehicle-render-top, 0px);
         width: var(--vehicle-render-width, 430px);
         height: var(--vehicle-render-height, 224px);
         transform: none;
-      }
-
-      .status-card-opened-icon,
-      .status-action-horn,
-      .status-action-light,
-      .crisp-web-ui {
-        display: none;
-      }
-
-      html:not(.native-ios) .reference-base {
-        display: none;
-      }
-
-      html:not(.native-ios) .screen {
-        background: #fff;
-      }
-
-      .crisp-theme-backdrop {
-        display: none;
-      }
-
-      html:not(.native-ios) .crisp-theme-backdrop {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 0;
-        display: block;
-        width: 430px;
-        height: 425px;
-        pointer-events: none;
-        background:
-          linear-gradient(
-            180deg,
-            #20264a 0,
-            #20264a 92px,
-            #22294b 130px,
-            #293052 166px,
-            #333957 200px,
-            rgba(51, 57, 87, 0.98) 203px,
-            rgba(51, 57, 87, 0) 211px
-          ),
-          url("assets/vehicle-stage-bg.png") center bottom / 430px 227px no-repeat;
-      }
-
-      html:not(.native-ios) .screen[data-vehicle-background="letter-pink"] .crisp-theme-backdrop {
-        background:
-          radial-gradient(ellipse 18% 33% at 31% 55%, rgba(255, 255, 255, 0.08), transparent 72%),
-          radial-gradient(ellipse 15% 31% at 68% 58%, rgba(255, 255, 255, 0.05), transparent 74%),
-          linear-gradient(
-            180deg,
-            #343335 0,
-            #363538 52px,
-            #413f42 96px,
-            #4b464a 116px,
-            #575155 137px,
-            #655e62 157px,
-            #74696f 178px,
-            #83767b 201px,
-            #918186 219px,
-            #9a898d 239px,
-            #a59295 259px,
-            #b29fa1 279px,
-            #c2b4b4 300px,
-            #d7ccce 322px,
-            #e2dcdc 342px,
-            #e6e3e4 362px,
-            #efedee 383px,
-            #f8f6f7 405px,
-            #fff 425px
-          );
-      }
-
-      html:not(.native-ios) .background-theme-overlay,
-      html:not(.native-ios) .background-theme-lighting {
-        display: none;
-      }
-
-      html:not(.native-ios) .crisp-web-ui {
-        display: block;
-      }
-
-      .crisp-top-icon {
-        position: absolute;
-        z-index: 6;
-        display: block;
-        fill: none;
-        stroke: rgba(255, 255, 255, 0.82);
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        pointer-events: none;
-      }
-
-      .crisp-top-bell {
-        left: 18px;
-        top: 68px;
-        width: 24px;
-        height: 30px;
-      }
-
-      .crisp-top-car {
-        right: 17px;
-        top: 73px;
-        width: 32px;
-        height: 22px;
-      }
-
-      html:not(.native-ios) .model-cover,
-      html:not(.native-ios) .updated-cover {
-        display: none;
-      }
-
-      html:not(.native-ios) .model-name,
-      html:not(.native-ios) .updated-text,
-      html:not(.native-ios) .system-status {
-        z-index: 6;
-      }
-
-      html:not(.native-ios) .updated-text {
-        opacity: 1;
-      }
-
-      html:not(.native-ios) .status-strip-overlay {
-        display: none;
-      }
-
-      html:not(.native-ios) .screen:not([data-vehicle-state="opened"]) .status-strip-overlay {
-        display: none;
-      }
-
-      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-strip-overlay {
-        left: 16px;
-        top: 139px;
-        width: 398px;
-        height: 62px;
-        z-index: 6;
-        display: block;
-        overflow: hidden;
-        border-radius: 6px;
-        background: linear-gradient(180deg, #080b16, #0b0e19);
-      }
-
-      .status-strip-icon {
-        position: absolute;
-        left: 18px;
-        top: 10px;
-        width: 30px;
-        height: 34px;
-        object-fit: contain;
-      }
-
-      .status-strip-text {
-        position: absolute;
-        left: 67px;
-        top: 13px;
-        color: #fff;
-        font-size: 18px;
-        line-height: 24px;
-        font-weight: 750;
-        letter-spacing: 0;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      html:not(.native-ios) .status-card-overlay {
-        z-index: 7;
-        display: block;
-      }
-
-      html:not(.native-ios) .status-actions-overlay {
-        left: 16px;
-        top: 550px;
-        width: 398px;
-        z-index: 7;
-        display: grid;
-        grid-template-columns: repeat(4, 88px);
-        gap: 15px;
-      }
-
-      html:not(.native-ios) .status-action-horn,
-      html:not(.native-ios) .status-action-light {
-        display: grid;
-      }
-
-      html:not(.native-ios) .status-action-button img {
-        display: block;
-        width: auto;
-        max-width: 25px;
-        height: 22px;
-        object-fit: contain;
-      }
-
-      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-action-unlock,
-      html:not(.native-ios) .screen[data-vehicle-state="normal"] .status-action-lock {
-        color: #fff;
-        background: #050505;
-      }
-
-      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-action-lock,
-      html:not(.native-ios) .screen[data-vehicle-state="normal"] .status-action-unlock {
-        color: #111;
-        background: #f2f2f2;
-      }
-
-      html:not(.native-ios) .screen[data-vehicle-state="opened"] .status-card-opened-icon {
-        position: absolute;
-        left: 15px;
-        bottom: 14px;
-        display: block;
-        width: 50px;
-        height: 30px;
-        object-fit: contain;
-      }
-
-      .crisp-fuel-card,
-      .crisp-feature-card {
-        position: absolute;
-        z-index: 2;
-        border-radius: 6px;
-        background: #f2f2f2;
-        color: #111;
-        pointer-events: none;
-      }
-
-      .crisp-fuel-card {
-        left: 223px;
-        top: 425px;
-        width: 191px;
-        height: 118px;
-      }
-
-      .crisp-feature-card {
-        top: 615px;
-        width: 191px;
-        height: 110px;
-      }
-
-      .crisp-ventilation-card {
-        left: 16px;
-      }
-
-      .crisp-remote-card {
-        left: 223px;
-      }
-
-      .crisp-card-title,
-      .crisp-card-subtitle {
-        position: absolute;
-        left: 15px;
-        letter-spacing: 0;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      .crisp-card-title {
-        top: 11px;
-        font-size: 15px;
-        line-height: 20px;
-        font-weight: 750;
-      }
-
-      .crisp-card-subtitle {
-        top: 32px;
-        color: #666;
-        font-size: 13px;
-        line-height: 18px;
-        font-weight: 400;
-      }
-
-      .crisp-card-icon {
-        position: absolute;
-        left: 16px;
-        bottom: 14px;
-        display: block;
-        fill: none;
-        stroke: #111;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      .crisp-fuel-icon {
-        width: 20px;
-        height: 23px;
-      }
-
-      .crisp-fan-icon {
-        width: 25px;
-        height: 25px;
-        bottom: 12px;
-      }
-
-      .crisp-remote-icon {
-        width: 27px;
-        height: 23px;
-        bottom: 12px;
       }
 
       .vehicle-state-overlay {
@@ -1823,18 +1530,6 @@
         gap: 10px;
       }
 
-      html.pwa-ios .edit-panel {
-        bottom: calc(18px + env(safe-area-inset-bottom, 0px) + var(--pwa-hidden-bottom, 0px));
-      }
-
-      html.pwa-ios .edit-actions {
-        position: sticky;
-        bottom: -1px;
-        z-index: 2;
-        padding-top: 7px;
-        background: rgba(255, 255, 255, 0.98);
-      }
-
       .edit-actions button {
         height: 38px;
         border: 0;
@@ -1852,55 +1547,6 @@
         color: #fff;
         background: #111;
       }
-
-      html:not(.native-ios) .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="original"]
-        .vehicle-stage,
-      html:not(.native-ios) .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="letter-blue"]
-        .vehicle-stage {
-        background: url("assets/vehicle-stage-bg.png") center / 100% 100% no-repeat;
-      }
-
-      html:not(.native-ios) .screen.uses-common-stage:not([data-vehicle-state="opened"])[data-vehicle-background="letter-pink"]
-        .vehicle-stage {
-        background:
-          radial-gradient(ellipse 18% 62% at 31% 14%, rgba(255, 255, 255, 0.09), transparent 72%),
-          radial-gradient(ellipse 15% 58% at 68% 18%, rgba(255, 255, 255, 0.06), transparent 74%),
-          linear-gradient(
-            180deg,
-            #83767b 0%,
-            #918186 8%,
-            #9a898d 17%,
-            #a59295 26%,
-            #b29fa1 35%,
-            #c2b4b4 44%,
-            #d7ccce 54%,
-            #e2dcdc 63%,
-            #e6e3e4 72%,
-            #efedee 81%,
-            #f8f6f7 90%,
-            #faf9f9 96%,
-            #ffffff 100%
-          );
-      }
-
-      /* The web/PWA renderer uses one continuous theme layer. Keeping the
-         stage itself transparent avoids horizontal seams in every state. */
-      html:not(.native-ios) .screen.uses-common-stage .vehicle-stage {
-        background: transparent;
-      }
-
-      html:not(.native-ios) .crisp-fuel-card .crisp-card-title {
-        top: 8px;
-      }
-
-      html:not(.native-ios) .fuel-percent-cover {
-        top: 454px;
-        height: 25px;
-      }
-
-      html:not(.native-ios) .fuel-percent-text {
-        top: 456px;
-      }
     </style>
   </head>
   <body>
@@ -1909,7 +1555,6 @@
       <img class="reference-base" src="assets/reference-screen@3x.jpg" alt="" />
       <div class="background-theme-overlay" aria-hidden="true"></div>
       <div class="background-theme-lighting" aria-hidden="true"></div>
-      <div class="crisp-theme-backdrop" aria-hidden="true"></div>
       <div class="vehicle-stage" aria-hidden="true">
         <span class="vehicle-contact-shadow"></span>
         <img class="vehicle-stage-image" id="vehicleStageImage" src="assets/models/530li-black.jpg" alt="" />
@@ -1930,14 +1575,10 @@
       <div class="model-name">530Li Sedan CHN</div>
       <div class="updated-cover" aria-hidden="true"></div>
       <div class="updated-text" id="updatedText">2026/6/30 21:23已从车辆更新</div>
-      <div class="vehicle-state-overlay status-strip-overlay" aria-hidden="true">
-        <img class="status-strip-icon" src="assets/strip-lock-ref.png" alt="" />
-        <span class="status-strip-text" id="statusStripText">已打开</span>
-      </div>
+      <div class="vehicle-state-overlay status-strip-overlay" aria-hidden="true"></div>
       <div class="vehicle-state-overlay status-card-overlay" aria-hidden="true">
         <span class="status-card-title">状态</span>
         <span class="status-card-subtitle" id="statusCardSubtitle">已打开</span>
-        <img class="status-card-opened-icon" src="assets/status-icon-group.png" alt="" />
         <svg class="status-card-normal-icon" viewBox="0 0 32 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 15v-4a8 8 0 0 1 16 0v4" />
           <rect x="5" y="15" width="22" height="17" rx="2.5" />
@@ -1963,47 +1604,6 @@
             <path d="M16 18v4" />
           </svg>
         </span>
-        <span class="status-action-button status-action-horn">
-          <img src="assets/btn-horn-ref.png" alt="" />
-        </span>
-        <span class="status-action-button status-action-light">
-          <img src="assets/btn-light-ref.png" alt="" />
-        </span>
-      </div>
-      <div class="crisp-web-ui" aria-hidden="true">
-        <svg class="crisp-top-icon crisp-top-bell" viewBox="0 0 28 34" stroke-width="1.8" aria-hidden="true">
-          <path d="M7 25.5h14c-1.8-2.1-2.7-5.1-2.7-9v-2.2a4.3 4.3 0 0 0-8.6 0v2.2c0 3.9-.9 6.9-2.7 9Z" />
-          <path d="M11.3 28.2c.6 1.3 1.5 2 2.7 2s2.1-.7 2.7-2M12 9.7c.3-1.2 1-1.8 2-1.8s1.7.6 2 1.8" />
-        </svg>
-        <svg class="crisp-top-icon crisp-top-car" viewBox="0 0 42 28" stroke-width="1.7" aria-hidden="true">
-          <path d="M5 17.5 8 12l7.3-2.1h11.4l6.2 3.3 4.1 1.2v6.1h-3.2M8.1 20.5H5v-3" />
-          <path d="M12.5 10 17 6.8h9.1l5.2 5.4M8.3 15.2h25.2" />
-          <circle cx="12.1" cy="20.1" r="3.1" />
-          <circle cx="29.8" cy="20.1" r="3.1" />
-        </svg>
-        <div class="crisp-fuel-card">
-          <span class="crisp-card-title">油位</span>
-          <img class="crisp-card-icon crisp-fuel-icon" src="assets/fuel-ref.png" alt="" />
-        </div>
-        <div class="crisp-feature-card crisp-ventilation-card">
-          <span class="crisp-card-title">通风</span>
-          <span class="crisp-card-subtitle">关闭</span>
-          <svg class="crisp-card-icon crisp-fan-icon" viewBox="0 0 34 34" stroke-width="1.8" aria-hidden="true">
-            <circle cx="17" cy="17" r="2.2" />
-            <path d="M17 14.6c-2.1-5.2-.8-9.1 2.1-10.3 2.8-1.1 4.5 1.2 3.9 4.3-.5 2.7-2.4 4.9-6 7.2" />
-            <path d="M19.3 17c5.2-2.1 9.1-.8 10.3 2.1 1.1 2.8-1.2 4.5-4.3 3.9-2.7-.5-4.9-2.4-7.2-6" />
-            <path d="M17 19.3c2.1 5.2.8 9.1-2.1 10.3-2.8 1.1-4.5-1.2-3.9-4.3.5-2.7 2.4-4.9 6-7.2" />
-            <path d="M14.6 17c-5.2 2.1-9.1.8-10.3-2.1-1.1-2.8 1.2-4.5 4.3-3.9 2.7.5 4.9 2.4 7.2 6" />
-          </svg>
-        </div>
-        <div class="crisp-feature-card crisp-remote-card">
-          <span class="crisp-card-title">远程功能</span>
-          <span class="crisp-card-subtitle">远距离车控</span>
-          <svg class="crisp-card-icon crisp-remote-icon" viewBox="0 0 38 30" stroke-width="1.8" aria-hidden="true">
-            <path d="m7 14.5 3.5-6h17l3.5 6M5.5 16.2h27v8.1h-27z" />
-            <path d="M10.5 8.5 14 5.8h10l3.5 2.7M9 19h4m12 0h4M8 24.3v2.2m22-2.2v2.2M14.2 22h9.6" />
-          </svg>
-        </div>
       </div>
       <div class="fuel-percent-cover" aria-hidden="true"></div>
       <div class="fuel-percent-text" id="fuelPercentText">80 %</div>
@@ -2205,7 +1805,6 @@
       const fuelPercentText = document.querySelector("#fuelPercentText");
       const rangeValue = document.querySelector("#rangeValue");
       const statusCardSubtitle = document.querySelector("#statusCardSubtitle");
-      const statusStripText = document.querySelector("#statusStripText");
       const editPanel = document.querySelector("#editPanel");
       const editVehicleState = document.querySelector("#editVehicleState");
       const editLastUpdated = document.querySelector("#editLastUpdated");
@@ -2394,8 +1993,7 @@
         const isReferenceBaseVehicle = assetId === "530li" && garageState.color === "black";
         const isBaseVehicle = isReferenceBaseVehicle && garageState.background === "original";
         const layerKey = `${assetId}-${garageState.color}`;
-        const crispWebMode = !document.documentElement.classList.contains("native-ios");
-        const usesCommonStage = crispWebMode || !isBaseVehicle;
+        const usesCommonStage = !isBaseVehicle;
         const layerTuning = VEHICLE_LAYER_TUNING[layerKey] || { scale: 1.08, x: 0, y: 2 };
         const hasLetterBackground = garageState.background.startsWith("letter-");
         const letterScaleByVehicle = {
@@ -2425,12 +2023,12 @@
         root.style.setProperty("--garage-accent-color", selected.accent);
         if (garageAccentSwatch) garageAccentSwatch.style.background = selected.accent;
         renderModelName(modelDisplayName);
-        root.classList.toggle("has-custom-vehicle", crispWebMode || !isBaseVehicle);
+        root.classList.toggle("has-custom-vehicle", !isBaseVehicle);
         root.classList.toggle("uses-common-stage", usesCommonStage);
-        vehicleStageImage.src = usesCommonStage
-          ? modelLayerPath(assetId, garageState.color)
-          : isBaseVehicle
-            ? "assets/models/530li-black.jpg"
+        vehicleStageImage.src = isBaseVehicle
+          ? "assets/models/530li-black.jpg"
+          : usesCommonStage
+            ? modelLayerPath(assetId, garageState.color)
             : modelImagePath(assetId, garageState.color);
         vehicleStageImage.dataset.fallbackSrc = modelLayerPath(
           garageState.era === "classic" ? `${selected.id}-classic` : selected.id,
@@ -2492,7 +2090,6 @@
         };
         root.dataset.vehicleState = state;
         statusCardSubtitle.textContent = labels[state];
-        statusStripText.textContent = labels[state];
       }
 
       function formatSystemTime(date = new Date()) {
@@ -2511,18 +2108,14 @@
         const widthScale = window.innerWidth / 430;
         const heightScale = window.innerHeight / 936;
         const scale = Math.min(widthScale, heightScale, nativeIOS ? 1.04 : 1);
-        const nearReferenceRatio = Math.abs(widthScale - heightScale) < 0.035;
         // Standalone iOS PWAs report less usable height because of system safe
         // areas. Fit them by width and crop only the unused bottom of the fixed
         // canvas. Keeping a uniform scale avoids stretching/rasterising text.
         const pwaScale = widthScale;
-        const scaleX = pwaIOS ? pwaScale : (nativeIOS && nearReferenceRatio ? widthScale : scale);
-        const scaleY = pwaIOS ? pwaScale : (nativeIOS && nearReferenceRatio ? heightScale : scale);
+        const scaleX = nativeIOS || pwaIOS ? pwaScale : scale;
+        const scaleY = nativeIOS || pwaIOS ? pwaScale : scale;
         document.documentElement.style.setProperty("--app-scale-x", String(Math.max(0.1, scaleX)));
         document.documentElement.style.setProperty("--app-scale-y", String(Math.max(0.1, scaleY)));
-        const visibleCanvasHeight = window.innerHeight / Math.max(0.1, scaleY);
-        const hiddenCanvasBottom = pwaIOS ? Math.max(0, 936 - visibleCanvasHeight) : 0;
-        document.documentElement.style.setProperty("--pwa-hidden-bottom", `${hiddenCanvasBottom}px`);
         document.documentElement.style.setProperty("--native-offset-y", "0px");
       }
 
